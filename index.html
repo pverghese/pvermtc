@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Geolocation API</title>
+</head>
+<style>
+  h1 {
+    color: black;
+    font-family: verdana;
+    font-size: 100%;
+  }
+
+  p {
+    color: blue;
+    font-family: courier;
+    font-size: 100%;
+    margin: 5px;
+    background-color: lavenderblush;
+  }
+
+  .pstops {
+    color: black;
+    font-family: courier;
+    font-size: 100%;
+    border: 1px solid blue;
+    border-radius: 5%;
+  }
+
+  .pstops:active {
+    background-color: cadetblue;
+  }
+
+  .stops {
+    background-color: azure;
+    color: black;
+    border-bottom: 1px solid black;
+    margin: 5px;
+    padding: 2px;
+    font-weight: bold;
+  }
+</style>
+
+<body>
+  <h1>Find your Current location</h1>
+  <button onclick="getlocation()">Click me</button>
+  <div id="location"></div>
+  <div id="stops" class="stops"></div>
+  <div id="stop"></div>
+  <script>
+    function getlocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition)
+      }
+      else {
+        alert("Sorry! your browser is not supporting")
+      }
+    }
+
+    function showPosition(position) {
+      var x = "Your current location is (" + "Latitude: " + position.coords.latitude + ", " + "Longitude: " + position.coords.longitude + ")";
+      document.getElementById("location").innerHTML = x;
+      console.log(x)
+      //console.log(data);
+      document.getElementById("stops").innerHTML = "Loading...";
+      data = getData(position).then((y) => {
+        var stops = '';
+        console.log(y);
+        y["data"].map(((d) => {
+          stops += `<p class="pstops" onclick='te(${d["geofenceid"]})'>${d["geofencename"]} -> ${d["towards"]} ---- distance:${d["distance"]} ---${d["geofenceid"]}</p>`
+        }));
+        console.log(stops)
+        document.getElementById("stops").innerHTML = stops;
+      }
+      )
+    }
+
+    function te(st) {
+      document.getElementById("stop").innerHTML = "getting data..."
+      console.log(st)
+      data = getStopData(st).then((y) => {
+        d = y["data"]
+        buses = ''
+        if (d.length == 0) {
+          document.getElementById("stop").innerHTML = "No buses found"
+        } else {
+          d.map((j) => {
+            buses += `<p>${j["routeno"]} - ${j["busno"]} -- ${j["arrivaltime"]} -- to: ${j["tostationname"]}</p>`
+          })
+          document.getElementById("stop").innerHTML = buses
+
+        }
+      })
+
+    }
+    async function getStopData(stop) {
+      let obj;
+      const res = await fetch("https://bmtcmobileapistaging.amnex.com/WebAPI/GetMobileTripsData", {
+        method: "POST",
+        body: JSON.stringify({
+          stationId: stop,
+          triptype: 1
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "lan": "en",
+          "deviceType": "android",
+          "deviceId": "0398cd37e29548dc",
+          "authToken": "N/A"
+        }
+      });
+      obj = await res.json()
+      return obj
+
+    }
+    async function getData(position) {
+      let obj;
+      const res = await fetch("https://bmtcmobileapistaging.amnex.com/WebAPI/NearbyStations_v2", {
+        method: "POST",
+        body: JSON.stringify({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          stationId: 0,
+          stationFlag: 1
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "lan": "en",
+          "deviceType": "android",
+          "deviceId": "0398cd37e29548dc",
+          "authToken": "N/A"
+        }
+      });
+      obj = await res.json()
+      return obj
+
+    }
+  </script>
+</body>
+
+</html>
