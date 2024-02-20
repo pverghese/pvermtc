@@ -8,7 +8,7 @@
   h1 {
     color: black;
     font-family: verdana;
-    font-size: 100%;
+    font-size: 160%;
   }
 
   p {
@@ -39,6 +39,16 @@
     padding: 2px;
     font-weight: bold;
   }
+  button {
+  background-color: #04AA6D; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
 </style>
 
 <body>
@@ -66,7 +76,7 @@
       console.log(`Getting bus stations nearby at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
       document.getElementById("stops").innerHTML = "Loading...";
       data = getData(position).then((y) => {
-        if (Object.keys(data).length === 0) {
+        if (Object.keys(y).length === 0) {
           document.getElementById("stops").innerHTML = "Server is down";
           return
         }
@@ -87,12 +97,12 @@
       //document.getElementById("stop").innerHTML = "getting data..."
       console.log(st)
       data = getStopData(st).then((y) => {
-        if (Object.keys(data).length === 0) {
+        if (Object.keys(y).length === 0) {
           document.getElementById("stop").innerHTML = "Server is down";
           return
         }
         d = y["data"]
-        buses = ''
+        buses = `Live Buses at station: ${st}`
         if (d.length == 0) {
           document.getElementById("stop").innerHTML = "No buses found"
         } else {
