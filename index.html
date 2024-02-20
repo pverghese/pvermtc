@@ -8,23 +8,26 @@
   h1 {
     color: black;
     font-family: verdana;
-    font-size: 160%;
+    font-size: 200%;
   }
 
   p {
-    color: blue;
+    color: rgb(0, 0, 0);
     font-family: courier;
     font-size: 100%;
     margin: 5px;
-    background-color: lavenderblush;
+    background-color: rgb(218, 217, 223);
   }
 
   .pstops {
-    color: black;
+    color: rgb(255, 248, 248);
+    background-color: rgb(48, 53, 198);
     font-family: courier;
     font-size: 100%;
-    border: 1px solid blue;
-    border-radius: 5%;
+    user-select: none;
+    display: flex;
+    padding: 10px 10px;
+
   }
 
   .pstops:active {
@@ -32,42 +35,65 @@
   }
 
   .stops {
-    background-color: azure;
+    background-color: rgb(156, 212, 244);
     color: black;
     border-bottom: 1px solid black;
     margin: 5px;
     padding: 2px;
     font-weight: bold;
   }
+
   button {
-  background-color: #04AA6D; /* Green */
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-}
+    background-color: #0423aa;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;
+  }
+
+  .input#fname {
+    display: inline-block;
+  }
 </style>
 
 <body>
   <h1>Find your Current location</h1>
+  <label for="fname">Search</label>
+  <input type="text" id="fname" name="fname">
   <button onclick="getlocation()">Click me</button>
   <div id="location"></div>
   <div id="stops" class="stops"></div>
   <div id="stop"></div>
   <script>
     function getlocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition)
-      }
-      else {
-        alert("Sorry! your browser is not supporting")
+      val = document.getElementById("fname").value
+      if (val) {
+        console.log(val)
+        data = search(val).then((y)=> {
+          if (y.length > 0) {
+            console.log("Got results: " + y.length)
+            console.log(y[0])
+            showPosition({coords: {latitude:parseFloat(y[0]["lat"]),longitude:parseFloat(y[0]["lon"])}})
+          }
+        })
+
+      } else {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition)
+        }
+        else {
+          alert("Sorry! your browser is not supporting")
+        }
+
       }
     }
 
     function showPosition(position) {
+      console.log(position)
       var x = "Your current location is (" + "Latitude: " + position.coords.latitude + ", " + "Longitude: " + position.coords.longitude + ")";
       document.getElementById("location").innerHTML = x;
       console.log(x)
@@ -114,6 +140,12 @@
         }
       })
 
+    }
+
+    async function search(searchStr) {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${searchStr}&format=json&limit=5`)
+      let body = await res.json()
+      return body
     }
     async function getStopData(stop) {
       let obj;
