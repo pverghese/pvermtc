@@ -82,7 +82,7 @@
     }
 
     function te(st) {
-      const timestamp= new Date(Date.now())
+      const timestamp = new Date(Date.now())
       console.log(`Getting live buses at station at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
       //document.getElementById("stop").innerHTML = "getting data..."
       console.log(st)
@@ -145,12 +145,12 @@
             "authToken": "N/A"
           }
         });
+        obj = await res.json()
+        return obj
       } catch (error) {
         console.log("There was an error", error)
         return {}
       }
-      obj = await res.json()
-      return obj
 
     }
   </script>
