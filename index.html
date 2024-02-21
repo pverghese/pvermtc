@@ -111,6 +111,7 @@
   .bolded {
     font-weight: bolder;
     font-size: larger;
+    color: #0e40d3;
   }
 </style>
 
@@ -186,11 +187,15 @@
           return
         }
         d = y["data"]
+        console.log(d)
         buses = `Live Buses at station: ${st}`
         if (d.length == 0) {
           document.getElementById("stop").innerHTML = buses + `<p>No buses found</p>`
         } else {
           d.map((j) => {
+            if (j["routeno"].includes("KIA") || j["routeno"][0] == "V") {
+              buses += `<p class="pstop" onclick='getBusData(${j["vehicleid"]})'><span class="bolded">${j["routeno"]} - ${j["busno"]} -- ${j["arrivaltime"].split(' ')[1]} -- to: ${j["tostationname"]}</span></p>`
+            }
             buses += `<p class="pstop" onclick='getBusData(${j["vehicleid"]})'>${j["routeno"]} - ${j["busno"]} -- ${j["arrivaltime"].split(' ')[1]} -- to: ${j["tostationname"]}</p>`
           })
           document.getElementById("stop").innerHTML = buses
