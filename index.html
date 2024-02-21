@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <head>
   <title>Geolocation API</title>
@@ -10,23 +11,33 @@
     font-family: verdana;
     font-size: 200%;
   }
-
+  .main {
+    display: flex;
+  }
+  label {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap:wrap;
+    margin-right: 2px;
+  }
   p {
     color: rgb(0, 0, 0);
     font-family: courier;
-    font-size: 100%;
+    font-size: 80%;
     margin: 5px;
     background-color: rgb(218, 217, 223);
+    padding: 5px 5px;
   }
 
   .pstops {
     color: rgb(255, 248, 248);
     background-color: rgb(48, 53, 198);
     font-family: courier;
-    font-size: 100%;
+    font-size: 80%;
     user-select: none;
     display: flex;
-    padding: 10px 10px;
+    padding: 5px 5px;
 
   }
 
@@ -36,6 +47,14 @@
 
   .stops {
     background-color: rgb(156, 212, 244);
+    color: black;
+    border-bottom: 1px solid black;
+    margin: 5px;
+    padding: 2px;
+    font-weight: bold;
+  }
+  .stop {
+    background-color: rgb(215, 229, 237);
     color: black;
     border-bottom: 1px solid black;
     margin: 5px;
@@ -52,32 +71,39 @@
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 24px;
+    font-size: 16px;
   }
 
-  .input#fname {
+  input[type=text] {
     display: inline-block;
+    height: auto;
+    border: 1px solid black;
+    margin-right: 10px;
+    width:35%;
   }
 </style>
 
 <body>
   <h1>Find your Current location</h1>
+  <div class="main">
   <label for="fname">Search</label>
-  <input type="text" id="fname" name="fname">
-  <button onclick="getlocation()">Click me</button>
+    <input type="text" id="fname" name="fname">
+    <button onclick="getlocation()">Get Location</button>
+
+  </div>
   <div id="location"></div>
   <div id="stops" class="stops"></div>
-  <div id="stop"></div>
+  <div id="stop" class="stop"></div>
   <script>
     function getlocation() {
       val = document.getElementById("fname").value
       if (val) {
         console.log(val)
-        data = search(val).then((y)=> {
+        data = search(val).then((y) => {
           if (y.length > 0) {
             console.log("Got results: " + y.length)
             console.log(y[0])
-            showPosition({coords: {latitude:parseFloat(y[0]["lat"]),longitude:parseFloat(y[0]["lon"])}})
+            showPosition({ coords: { latitude: parseFloat(y[0]["lat"]), longitude: parseFloat(y[0]["lon"]) } })
           }
         })
 
@@ -133,7 +159,8 @@
           document.getElementById("stop").innerHTML = "No buses found"
         } else {
           d.map((j) => {
-            buses += `<p>${j["routeno"]} - ${j["busno"]} -- ${j["arrivaltime"]} -- to: ${j["tostationname"]}</p>`
+            console.log(j["arrivaltime"])
+            buses += `<p>${j["routeno"]} - ${j["busno"]} -- ${j["arrivaltime"].split(' ')[1]} -- to: ${j["tostationname"]}</p>`
           })
           document.getElementById("stop").innerHTML = buses
 
