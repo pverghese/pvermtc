@@ -170,8 +170,9 @@
     }
 
     async function search(searchStr) {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${searchStr}&format=json&limit=5`)
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchStr+" bangalore")}&format=json&limit=5`)
       let body = await res.json()
+      console.log(body)
       return body
     }
     async function getStopData(stop) {
