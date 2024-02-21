@@ -49,6 +49,21 @@
   .pstops:active {
     background-color: cadetblue;
   }
+  .pstop {
+    color: rgb(0, 0, 0);
+    background-color: rgb(247, 246, 253);
+    font-family: courier;
+    font-size: 80%;
+    user-select: none;
+    display: flex;
+    padding: 5px 5px;
+    border-radius: 5px;
+
+  }
+
+  .pstop:active {
+    background-color: cadetblue;
+  }
 
   .stops {
     background-color: rgb(230, 231, 249);
@@ -170,7 +185,7 @@
           document.getElementById("stop").innerHTML = buses + `<p>No buses found</p>`
         } else {
           d.map((j) => {
-            buses += `<p onclick='getBusData(${j["vehicleid"]})'>${j["routeno"]} - ${j["busno"]} -- ${j["arrivaltime"].split(' ')[1]} -- to: ${j["tostationname"]}</p>`
+            buses += `<p class="pstop" onclick='getBusData(${j["vehicleid"]})'>${j["routeno"]} - ${j["busno"]} -- ${j["arrivaltime"].split(' ')[1]} -- to: ${j["tostationname"]}</p>`
           })
           document.getElementById("stop").innerHTML = buses
 
