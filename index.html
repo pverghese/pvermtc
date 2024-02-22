@@ -74,7 +74,7 @@
   }
 
   .mapPanel {
-    height: 0;
+    height: 100%;
     /* Specify a height */
     width: 100%;
     /* 0 width - change this with JavaScript */
@@ -91,6 +91,9 @@
     padding-bottom: 0px;
     /* Place content 60px from the top */
     transition: 0.3s;
+    opacity: 0;
+    transform:scaleX(0);
+    transform-origin: 0% 50%;
     /* 0.5 second transition effect to slide in the sidepanel */
   }
 
@@ -213,7 +216,9 @@
     }
 
     function getBusData(vehicleid) {
-      document.getElementById("mapPanel").style.height = "100%";
+      //document.getElementById("mapPanel").style.height = "100%";
+      document.getElementById("mapPanel").style.transform = "scaleX(1)";
+      document.getElementById("mapPanel").style.opacity = "1.0";
       const timestamp = new Date(Date.now())
       console.log(`Getting live bus data for ${vehicleid} at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
       //document.getElementById("stop").innerHTML = "getting data..."
@@ -273,7 +278,9 @@
 
 
     function closeNav() {
-      document.getElementById("mapPanel").style.height = "0";
+      document.getElementById("mapPanel").style.transform = "scaleX(0)";
+      document.getElementById("mapPanel").style.opacity = "0.0";
+      //document.getElementById("mapPanel").style.height = "0";
     }
     async function search(searchStr) {
       const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchStr + " bangalore")}&format=json&limit=5`)
