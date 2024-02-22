@@ -113,6 +113,24 @@
     width: 30px;
     text-align: center;
   }
+
+  #mapHeaderBar {
+    display: flex;
+    justify-content: space-between;
+
+  }
+
+  #mapHeaderBarLabel {
+    color: white;
+    text-align: center;
+    align-self: center;
+    font-size: 14px;
+    padding-right: 5px;
+  }
+  .bolded {
+    color: #121a6f;
+    font-weight: bold;
+  }
 </style>
 
 <body>
@@ -129,14 +147,17 @@
   <div id="stop" class="stop"></div>
   <div id="bus" class="bus"></div>
   <div id="mapPanel" class="mapPanel">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div id="mapHeaderBar">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <label id="mapHeaderBarLabel">Hello</label>
+    </div>
     <div id="map"></div>
   </div>
   <script>
     //Global map handler
     var map = undefined;
     //Global intervalUpdaterHandle
-    var updatingHandle=undefined;
+    var updatingHandle = undefined;
     screen.orientation.lock("portrait-primary");
     function getlocation() {
       val = document.getElementById("fname").value
@@ -251,8 +272,10 @@
         let long = parseFloat(y["LiveLocation"][0]["longitude"]);
         marker = L.marker([lat, long]).addTo(map);
         d = y["RouteDetails"]
-        bus = `<p><span class="bolded">Live Bus route for busno: ${y["RouteDetails"][0]["busno"]}</span></p>`
-        bus += `<p>Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}</p>`
+        //bus = `<p><span class="bolded">Live Bus route for busno: ${y["RouteDetails"][0]["busno"]}</span></p>`
+        //bus += `<p>Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}</p>`
+        bus = `Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}`
+        document.getElementById("mapHeaderBarLabel").innerText = bus;
         if (d.length == 0) {
           document.getElementById("stop").innerHTML = bus + `<p>No data received</p>`
         } else {
@@ -276,17 +299,20 @@
           let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
           let long = parseFloat(y["LiveLocation"][0]["longitude"]);
           //marker = L.marker([lat, long]).addTo(map);
-          marker.setLatLng([lat,long])
+          marker.setLatLng([lat, long])
+          bus = `Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}`
+          document.getElementById("mapHeaderBarLabel").innerText = bus;
+
           console.log(lat, long);
         })
-        }, 30000);
+      }, 30000);
 
 
     }
 
 
     function closeNav() {
-      if(updatingHandle) {
+      if (updatingHandle) {
         console.log("Live update was happening. Cancelling now");
         clearInterval(updatingHandle);
       }
