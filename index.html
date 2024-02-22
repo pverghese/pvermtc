@@ -92,7 +92,7 @@
     /* Place content 60px from the top */
     transition: 0.3s;
     opacity: 0;
-    transform:scaleX(0);
+    transform: scaleX(0);
     transform-origin: 0% 50%;
     /* 0.5 second transition effect to slide in the sidepanel */
   }
@@ -135,6 +135,8 @@
   <script>
     //Global map handler
     var map = undefined;
+    //Global intervalUpdaterHandle
+    var updatingHandle=undefined;
     function getlocation() {
       val = document.getElementById("fname").value
       if (val) {
@@ -171,7 +173,6 @@
 
         if (Object.keys(y).length === 0) {
           document.getElementById("stops").innerHTML = "Server is down";
-          item.innerHTML = "Server is down";
           return
         }
         var stops = '';
@@ -230,6 +231,7 @@
         map.off()
         map.remove()
       }
+      var marker = undefined;
       map = L.map('map').setView([parseFloat(lat), parseFloat(long)], 13);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -246,7 +248,7 @@
         //Current Location of bus
         let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
         let long = parseFloat(y["LiveLocation"][0]["longitude"]);
-        var marker = L.marker([lat, long]).addTo(map);
+        marker = L.marker([lat, long]).addTo(map);
         d = y["RouteDetails"]
         bus = `<p><span class="bolded">Live Bus route for busno: ${y["RouteDetails"][0]["busno"]}</span></p>`
         bus += `<p>Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}</p>`
@@ -261,23 +263,32 @@
               fillOpacity: 0.5,
               radius: 100
             }).addTo(map);
-            // if (j["stationname"] == j["laststop"].split('(')[0].trim()) {
-            //   console.log("Staion name is the same")
-            //   bus += `<p><span class="bolded">${j["stationname"]} - ${j["etastatus"]}  <---  Current Stop</span></p>`
-            // } else {
-            //   bus += `<p>${j["stationname"]} - ${j["etastatus"]}</p>`
-
-            // }
           })
-          //document.getElementById("bus").innerHTML = bus
         }
-        //document.getElementById("bus").innerHTML = bus
       })
+
+      updatingHandle = setInterval(function () {
+        data = getVehicleTripDetails(vehicleid).then((y) => {
+          if (Object.keys(y).length === 0) {
+            return;
+          }
+          let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
+          let long = parseFloat(y["LiveLocation"][0]["longitude"]);
+          //marker = L.marker([lat, long]).addTo(map);
+          marker.setLatLng([lat,long])
+          console.log(lat, long);
+        })
+        }, 30000);
+
 
     }
 
 
     function closeNav() {
+      if(updatingHandle) {
+        console.log("Live update was happening. Cancelling now");
+        clearInterval(updatingHandle);
+      }
       document.getElementById("mapPanel").style.transform = "scaleX(0)";
       document.getElementById("mapPanel").style.opacity = "0.0";
       //document.getElementById("mapPanel").style.height = "0";
