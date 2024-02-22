@@ -286,7 +286,7 @@
         //Current Location of bus
         let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
         let long = parseFloat(y["LiveLocation"][0]["longitude"]);
-        marker = L.marker([lat, long]).addTo(map);
+        marker = L.marker([lat, long]).addTo(map).bindPopup("Bus Location");
         d = y["RouteDetails"]
         //bus = `<p><span class="bolded">Live Bus route for busno: ${y["RouteDetails"][0]["busno"]}</span></p>`
         //bus += `<p>Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}</p>`
@@ -302,7 +302,7 @@
               fillColor: '#f03',
               fillOpacity: 0.75,
               radius: 15
-            }).addTo(map);
+            }).addTo(map).bindPopup(`${j["stationname"]} - ${j['etastatus']}`);
           })
         }
       })
@@ -335,7 +335,7 @@
 
       } else {
         userMarker = L.marker(e.latlng).addTo(map)
-          .bindPopup("You are within " + radius + " meters from this point").openPopup();
+          .bindPopup("User location");
         userMarker._icon.classList.add("huechange")
 
 
@@ -346,6 +346,8 @@
       if (updatingHandle) {
         console.log("Live update was happening. Cancelling now");
         clearInterval(updatingHandle);
+        map.stopLocate();
+        userMarker=undefined;
       }
       document.getElementById("mapPanel").style.transform = "scaleX(0)";
       document.getElementById("mapPanel").style.opacity = "0.0";
