@@ -127,9 +127,15 @@
     font-size: 14px;
     padding-right: 5px;
   }
+
   .bolded {
     color: #121a6f;
     font-weight: bold;
+  }
+
+  /*For changing marker color */
+  img.huechange {
+    filter: hue-rotate(120deg);
   }
 </style>
 
@@ -158,6 +164,10 @@
     var map = undefined;
     //Global intervalUpdaterHandle
     var updatingHandle = undefined;
+
+    //User current location;
+    var userMarker = undefined;
+
     screen.orientation.lock("portrait-primary");
     function getlocation() {
       val = document.getElementById("fname").value
@@ -253,6 +263,7 @@
         map.off()
         map.remove()
       }
+      //Bus current location
       var marker = undefined;
       map = L.map('map').setView([parseFloat(lat), parseFloat(long)], 13);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -260,6 +271,10 @@
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(map);
       setTimeout(function () { map.invalidateSize() }, 400);
+
+      //start live location tracking
+      map.locate({ watch: true })
+      map.on('locationfound', onLocationFound);
 
       data = getVehicleTripDetails(vehicleid).then((y) => {
         if (Object.keys(y).length === 0) {
@@ -310,7 +325,22 @@
 
     }
 
+    function onLocationFound(e) {
+      var radius = e.accuracy;
+      if (userMarker) {
+        console.log("User location update: ", e.latlng)
+        userMarker.setLatLng(e.latlng);
 
+
+      } else {
+        userMarker = L.marker(e.latlng).addTo(map)
+          .bindPopup("You are within " + radius + " meters from this point").openPopup();
+        userMarker._icon.classList.add("huechange")
+
+
+      }
+
+    }
     function closeNav() {
       if (updatingHandle) {
         console.log("Live update was happening. Cancelling now");
