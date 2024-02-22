@@ -74,41 +74,41 @@
   }
 
   .mapPanel {
-    height: 100%;
+    height: 90%;
     /* Specify a height */
-    width: 0;
+    width: 100%;
     /* 0 width - change this with JavaScript */
     position: fixed;
     /* Stay in place */
     z-index: 1;
     /* Stay on top */
-    top: 0;
+    bottom: 0;
     left: 0;
     background-color: #111;
     /* Black*/
     overflow-x: hidden;
     /* Disable horizontal scroll */
-    padding-top: 60px;
+    padding-bottom: 0px;
     /* Place content 60px from the top */
-    transition: 0.5s;
+    transition: 0.3s;
     /* 0.5 second transition effect to slide in the sidepanel */
   }
 
   .mapPanel a {
-    padding: 8px 8px 8px 32px;
+    /* padding: 8px 8px 8px 32px; */
     text-decoration: none;
-    font-size: 25px;
+    /*font-size: 10px;*/
     color: #818181;
     display: block;
     transition: 0.3s;
   }
 
   .mapPanel .closebtn {
-    position: absolute;
+    position: sticky;
     top: 0;
-    right: 25px;
     font-size: 36px;
-    margin-left: 50px;
+    width: 30px;
+    text-align: center;
   }
 </style>
 
@@ -147,7 +147,7 @@
 
       } else {
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(getBusStops, null, { enableHighAccuracy: true })
+          navigator.geolocation.getCurrentPosition(getBusStops)
         }
         else {
           alert("Sorry! your browser does not support location determination")
@@ -213,7 +213,7 @@
     }
 
     function getBusData(vehicleid) {
-      document.getElementById("mapPanel").style.width = "100%";
+      document.getElementById("mapPanel").style.height = "100%";
       const timestamp = new Date(Date.now())
       console.log(`Getting live bus data for ${vehicleid} at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
       //document.getElementById("stop").innerHTML = "getting data..."
@@ -225,12 +225,12 @@
         map.off()
         map.remove()
       }
-      setTimeout(function(){ map.invalidateSize()}, 400);
       map = L.map('map').setView([parseFloat(lat), parseFloat(long)], 13);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(map);
+      setTimeout(function () { map.invalidateSize() }, 400);
 
       data = getVehicleTripDetails(vehicleid).then((y) => {
         if (Object.keys(y).length === 0) {
@@ -273,7 +273,7 @@
 
 
     function closeNav() {
-      document.getElementById("mapPanel").style.width = "0";
+      document.getElementById("mapPanel").style.height = "0";
     }
     async function search(searchStr) {
       const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchStr + " bangalore")}&format=json&limit=5`)
