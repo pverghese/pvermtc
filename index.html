@@ -57,6 +57,7 @@
     font-size: 12px;
     text-align: left;
     padding: 5px;
+    user-select: none;
   }
 
   .buses {
@@ -65,10 +66,49 @@
     border-radius: 5px;
     padding: 3px;
     font-size: 0.9em;
+    user-select: none;
   }
 
   #map {
-    height: 500px;
+    height: 90%;
+  }
+
+  .mapPanel {
+    height: 100%;
+    /* Specify a height */
+    width: 0;
+    /* 0 width - change this with JavaScript */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Stay on top */
+    top: 0;
+    left: 0;
+    background-color: #111;
+    /* Black*/
+    overflow-x: hidden;
+    /* Disable horizontal scroll */
+    padding-top: 60px;
+    /* Place content 60px from the top */
+    transition: 0.5s;
+    /* 0.5 second transition effect to slide in the sidepanel */
+  }
+
+  .mapPanel a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+  }
+
+  .mapPanel .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
   }
 </style>
 
@@ -85,10 +125,13 @@
   <div id="stops" class="stops"></div>
   <div id="stop" class="stop"></div>
   <div id="bus" class="bus"></div>
-  <div id="map"></div>
+  <div id="mapPanel" class="mapPanel">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div id="map"></div>
+  </div>
   <script>
     //Global map handler
-    var map=undefined;
+    var map = undefined;
     function getlocation() {
       val = document.getElementById("fname").value
       if (val) {
@@ -170,6 +213,7 @@
     }
 
     function getBusData(vehicleid) {
+      document.getElementById("mapPanel").style.width = "100%";
       const timestamp = new Date(Date.now())
       console.log(`Getting live bus data for ${vehicleid} at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
       //document.getElementById("stop").innerHTML = "getting data..."
@@ -177,17 +221,16 @@
       let a = document.getElementById("location")
       let lat = a.innerText.split(' ')[4]
       let long = a.innerText.split(' ')[6]
-      if(map!=undefined) {
+      if (map != undefined) {
         map.off()
         map.remove()
       }
-
+      setTimeout(function(){ map.invalidateSize()}, 400);
       map = L.map('map').setView([parseFloat(lat), parseFloat(long)], 13);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(map);
-
 
       data = getVehicleTripDetails(vehicleid).then((y) => {
         if (Object.keys(y).length === 0) {
@@ -198,14 +241,10 @@
         //Current Location of bus
         let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
         let long = parseFloat(y["LiveLocation"][0]["longitude"]);
-        console.log(lat)
         var marker = L.marker([lat, long]).addTo(map);
         d = y["RouteDetails"]
         bus = `<p><span class="bolded">Live Bus route for busno: ${y["RouteDetails"][0]["busno"]}</span></p>`
         bus += `<p>Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}</p>`
-        bus += `<p>Location: ${y["LiveLocation"][0]["location"]}</p>`
-        bus += `<p>PrevStop: ${y["LiveLocation"][0]["previousstop"]}</p>`
-        bus += `<p>NextStop: ${y["LiveLocation"][0]["nextstop"]}</p>`
         if (d.length == 0) {
           document.getElementById("stop").innerHTML = bus + `<p>No data received</p>`
         } else {
@@ -225,15 +264,17 @@
 
             // }
           })
-          document.getElementById("bus").innerHTML = bus
+          //document.getElementById("bus").innerHTML = bus
         }
         //document.getElementById("bus").innerHTML = bus
       })
 
-
     }
 
 
+    function closeNav() {
+      document.getElementById("mapPanel").style.width = "0";
+    }
     async function search(searchStr) {
       const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchStr + " bangalore")}&format=json&limit=5`)
       let body = await res.json()
