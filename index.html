@@ -137,6 +137,12 @@
     var map = undefined;
     //Global intervalUpdaterHandle
     var updatingHandle=undefined;
+    window.addEventListener('popstate', () => {
+      if(updatingHandle) {
+        console.log("Back button pressed on map view. Going back to main screen")
+        closeNav();
+      }
+    });
     function getlocation() {
       val = document.getElementById("fname").value
       if (val) {
