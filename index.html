@@ -273,7 +273,8 @@
       setTimeout(function () { map.invalidateSize() }, 400);
 
       //start live location tracking
-      map.locate({ setView: true,watch: true })
+      map.locate({ setView: true, maxZoom:18})
+      map.locate({ watch: true})
       map.on('locationfound', onLocationFound);
 
       data = getVehicleTripDetails(vehicleid).then((y) => {
