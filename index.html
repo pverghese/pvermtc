@@ -137,10 +137,6 @@
     var map = undefined;
     //Global intervalUpdaterHandle
     var updatingHandle=undefined;
-    window.addEventListener('popstate', () => {
-        console.log("Back button pressed on map view. Going back to main screen")
-        closeNav();
-    });
     function getlocation() {
       val = document.getElementById("fname").value
       if (val) {
@@ -243,11 +239,6 @@
       }).addTo(map);
       setTimeout(function () { map.invalidateSize() }, 400);
 
-      //Implement history push state so back button closes map
-      const state = { page_id: 1};
-      const url = "index.html";
-
-      history.pushState(state, "", url);
       data = getVehicleTripDetails(vehicleid).then((y) => {
         if (Object.keys(y).length === 0) {
           document.getElementById("bus").innerHTML = "Server not respoding with bus data";
@@ -294,7 +285,6 @@
 
 
     function closeNav() {
-      history.back();
       if(updatingHandle) {
         console.log("Live update was happening. Cancelling now");
         clearInterval(updatingHandle);
