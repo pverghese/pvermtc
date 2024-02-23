@@ -155,7 +155,7 @@
   <div id="bus" class="bus"></div>
   <div id="mapPanel" class="mapPanel">
     <div id="mapHeaderBar">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <a href="javascript:void(0)" class="closebtn" onclick="history.back()">&times;</a>
       <label id="mapHeaderBarLabel">Hello</label>
     </div>
     <div id="map"></div>
@@ -169,7 +169,6 @@
     //Adding state
     window.addEventListener('popstate', () => {
       console.log("Back button pressed on map view. Going back to main screen")
-      history.pushState("new","","index.html");
       closeNav();
     });
 
