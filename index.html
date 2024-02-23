@@ -280,9 +280,9 @@
       setTimeout(function () { map.invalidateSize() }, 400);
 
       //Adding history state
-      const state = { page_id: 1};
       const url = "index.html";
-      history.pushState(state, "", url);
+      history.pushState("newpage", "", url);
+      console.log(history.length, history.state)
 
       //start live location tracking
       map.locate({ setView: true, maxZoom: 18 })
@@ -355,6 +355,9 @@
 
     }
     function closeNav() {
+      if(history.length>1) {
+        history.back();
+      }
       if (updatingHandle) {
         console.log("Live update was happening. Cancelling now");
         clearInterval(updatingHandle);
