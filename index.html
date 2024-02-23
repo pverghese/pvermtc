@@ -208,7 +208,18 @@
       //console.log(data);
       const timestamp = new Date(Date.now())
       //console.log(`Getting bus stations nearby at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
-      document.getElementById("stops").innerHTML = "Loading...";
+
+      //Loading from local Storage if exists before trying to get data
+      localStorageStops = localStorage.getItem("stops");
+      if (localStorageStops) {
+        var stops = 'Cached response. Loading data still\n';
+        JSON.parse(localStorageStops)["data"].map(((d) => {
+          stops += `<p class="pstops" onclick='getBusAtStation(${d["geofenceid"]})'>${d["geofencename"]} -> ${d["towards"]} ---- distance:${d["distance"]} ---${d["geofenceid"]}</p>`
+        }));
+        document.getElementById("stops").innerHTML = stops;
+      }
+
+      //document.getElementById("stops").innerHTML = "Loading...";
       data = getData(position).then((y) => {
 
         if (Object.keys(y).length === 0) {
@@ -216,7 +227,7 @@
           return
         }
         //Store in local storage
-        localStorage.setItem("stops",JSON.stringify(y));
+        localStorage.setItem("stops", JSON.stringify(y));
         var stops = '';
         //console.log(y);
         y["data"].map(((d) => {
@@ -233,13 +244,29 @@
       console.log(`Getting live buses at station at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
       //document.getElementById("stop").innerHTML = "getting data..."
       console.log(st)
+
+      localStorageStation = localStorage.getItem("station");
+      buses = `cached Buses at station: ${st}`
+      if (localStorageStation) {
+        var stops = 'Cached response. Loading data still\n';
+        buses = `Cached response: ${st}`
+        JSON.parse(localStorageStation)["data"].map(((d) => {
+          if (d["routeno"].includes("KIA") || d["routeno"][0] == "V") {
+            buses += `<p class="buses" onclick='getBusData(${d["vehicleid"]})'><span class="bolded">${d["routeno"]} - ${d["busno"]} -- ${d["arrivaltime"].split(' ')[1]} -- to: ${d["tostationname"]}</span></p>`
+          } else {
+            buses += `<p class="buses" onclick='getBusData(${d["vehicleid"]})'>${d["routeno"]} - ${d["busno"]} -- ${d["arrivaltime"].split(' ')[1]} -- to: ${d["tostationname"]}</p>`
+          }
+        }));
+        document.getElementById("stop").innerHTML = buses;
+      }
+
       data = getStopData(st).then((y) => {
         if (Object.keys(y).length === 0) {
           document.getElementById("stop").innerHTML = "Server is down";
           return
         }
         //Store in local storage
-        localStorage.setItem("station",JSON.stringify(y));
+        localStorage.setItem("station", JSON.stringify(y));
 
         d = y["data"]
         console.log(d)
