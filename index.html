@@ -136,10 +136,6 @@
   /*For changing marker color */
   img.huechange {
     filter: hue-rotate(120deg);
-    transition: 0.3s ease;
-  }
-  .busMarkerTransition {
-    transition: 0.3s ease;
   }
 </style>
 
@@ -302,7 +298,6 @@
         let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
         let long = parseFloat(y["LiveLocation"][0]["longitude"]);
         marker = L.marker([lat, long]).addTo(map).bindPopup("Bus Location");
-        marker._icon.classList.add("busMarkerTransition")
         d = y["RouteDetails"]
         //bus = `<p><span class="bolded">Live Bus route for busno: ${y["RouteDetails"][0]["busno"]}</span></p>`
         //bus += `<p>Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}</p>`
