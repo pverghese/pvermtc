@@ -168,6 +168,7 @@
 
     //Adding state
     window.addEventListener('popstate', () => {
+      console.log("back button pressed", history.state);
       console.log("Back button pressed on map view. Going back to main screen")
       closeNav();
     });
@@ -281,7 +282,8 @@
 
       //Adding history state
       const url = "index.html";
-      history.pushState("newpage", "", url);
+      history.pushState({ page: 1 }, "Live map", "?page=map");
+      //history.pushState("newpage", "", url);
 
       //start live location tracking
       map.locate({ setView: true, maxZoom: 18 })
