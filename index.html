@@ -215,6 +215,8 @@
           document.getElementById("stops").innerHTML = "Server is down";
           return
         }
+        //Store in local storage
+        localStorage.setItem("stops",JSON.stringify(y));
         var stops = '';
         //console.log(y);
         y["data"].map(((d) => {
@@ -236,6 +238,9 @@
           document.getElementById("stop").innerHTML = "Server is down";
           return
         }
+        //Store in local storage
+        localStorage.setItem("station",JSON.stringify(y));
+
         d = y["data"]
         console.log(d)
         buses = `Live Buses at station: ${st}`
