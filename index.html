@@ -165,6 +165,12 @@
     //Global intervalUpdaterHandle
     var updatingHandle = undefined;
 
+    //Adding state
+    window.addEventListener('popstate', () => {
+      console.log("Back button pressed on map view. Going back to main screen")
+      closeNav();
+    });
+
     //User current location;
     var userMarker = undefined;
 
@@ -272,9 +278,14 @@
       }).addTo(map);
       setTimeout(function () { map.invalidateSize() }, 400);
 
+      //Adding history state
+      const state = { page_id: 1};
+      const url = "index.html";
+      history.pushState(state, "", url);
+
       //start live location tracking
-      map.locate({ setView: true, maxZoom:18})
-      map.locate({ watch: true})
+      map.locate({ setView: true, maxZoom: 18 })
+      map.locate({ watch: true })
       map.on('locationfound', onLocationFound);
 
       data = getVehicleTripDetails(vehicleid).then((y) => {
@@ -347,7 +358,7 @@
         console.log("Live update was happening. Cancelling now");
         clearInterval(updatingHandle);
         map.stopLocate();
-        userMarker=undefined;
+        userMarker = undefined;
       }
       document.getElementById("mapPanel").style.transform = "scaleX(0)";
       document.getElementById("mapPanel").style.opacity = "0.0";
