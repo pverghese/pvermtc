@@ -355,7 +355,7 @@
 
     }
     function closeNav() {
-      if(history.state) {history.replaceState(null, "");}
+      history.back();
       if (updatingHandle) {
         console.log("Live update was happening. Cancelling now");
         clearInterval(updatingHandle);
