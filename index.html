@@ -212,7 +212,6 @@
     //User current location;
     var userMarker = undefined;
 
-    screen.orientation.lock("portrait-primary");
     function getlocation() {
       val = document.getElementById("fname").value
       if (val) {
@@ -360,7 +359,7 @@
               color: 'red',
               fillColor: '#f03',
               fillOpacity: 0.75,
-              radius: 40
+              radius: 100
             }).addTo(map).bindPopup(`${j["stationname"]} - ${j['etastatus']}`);
           })
         }
