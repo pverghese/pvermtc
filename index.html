@@ -166,6 +166,42 @@
     //Global intervalUpdaterHandle
     var updatingHandle = undefined;
 
+    //First load
+    window.addEventListener('load', function (event) {
+      //get location
+      loc = localStorage.getItem("loc");
+      if (location) {
+        document.getElementById("location").innerHTML =loc;
+
+      }
+
+
+      //Loading from local Storage if exists before trying to get data
+      localStorageStops = localStorage.getItem("stops");
+      if (localStorageStops) {
+        var stops = 'Cached response. Loading data still\n';
+        JSON.parse(localStorageStops)["data"].map(((d) => {
+          stops += `<p class="pstops" onclick='getBusAtStation(${d["geofenceid"]})'>${d["geofencename"]} -> ${d["towards"]} ---- distance:${d["distance"]} ---${d["geofenceid"]}</p>`
+        }));
+        document.getElementById("stops").innerHTML = stops;
+      }
+      //loading buses at station from local storage
+      localStorageStation = localStorage.getItem("station");
+      buses = `cached Buses at station`
+      if (localStorageStation) {
+        buses = `Cached response`
+        JSON.parse(localStorageStation)["data"].map(((d) => {
+          if (d["routeno"].includes("KIA") || d["routeno"][0] == "V") {
+            buses += `<p class="buses" onclick='getBusData(${d["vehicleid"]})'><span class="bolded">${d["routeno"]} - ${d["busno"]} -- ${d["arrivaltime"].split(' ')[1]} -- to: ${d["tostationname"]}</span></p>`
+          } else {
+            buses += `<p class="buses" onclick='getBusData(${d["vehicleid"]})'>${d["routeno"]} - ${d["busno"]} -- ${d["arrivaltime"].split(' ')[1]} -- to: ${d["tostationname"]}</p>`
+          }
+        }));
+        document.getElementById("stop").innerHTML = buses;
+      }
+
+    });
+
     //Adding state
     window.addEventListener('popstate', () => {
       console.log("back button pressed", history.state);
@@ -203,21 +239,13 @@
 
     function getBusStops(position) {
       var x = "Current location is (" + "Lat: " + position.coords.latitude + ", " + "Long: " + position.coords.longitude + ")";
+      localStorage.setItem("loc", x)
       document.getElementById("location").innerHTML = x;
-      //console.log(x)
+      console.log(x)
       //console.log(data);
       const timestamp = new Date(Date.now())
       //console.log(`Getting bus stations nearby at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
 
-      //Loading from local Storage if exists before trying to get data
-      localStorageStops = localStorage.getItem("stops");
-      if (localStorageStops) {
-        var stops = 'Cached response. Loading data still\n';
-        JSON.parse(localStorageStops)["data"].map(((d) => {
-          stops += `<p class="pstops" onclick='getBusAtStation(${d["geofenceid"]})'>${d["geofencename"]} -> ${d["towards"]} ---- distance:${d["distance"]} ---${d["geofenceid"]}</p>`
-        }));
-        document.getElementById("stops").innerHTML = stops;
-      }
 
       //document.getElementById("stops").innerHTML = "Loading...";
       data = getData(position).then((y) => {
@@ -245,20 +273,6 @@
       //document.getElementById("stop").innerHTML = "getting data..."
       console.log(st)
 
-      localStorageStation = localStorage.getItem("station");
-      buses = `cached Buses at station: ${st}`
-      if (localStorageStation) {
-        var stops = 'Cached response. Loading data still\n';
-        buses = `Cached response: ${st}`
-        JSON.parse(localStorageStation)["data"].map(((d) => {
-          if (d["routeno"].includes("KIA") || d["routeno"][0] == "V") {
-            buses += `<p class="buses" onclick='getBusData(${d["vehicleid"]})'><span class="bolded">${d["routeno"]} - ${d["busno"]} -- ${d["arrivaltime"].split(' ')[1]} -- to: ${d["tostationname"]}</span></p>`
-          } else {
-            buses += `<p class="buses" onclick='getBusData(${d["vehicleid"]})'>${d["routeno"]} - ${d["busno"]} -- ${d["arrivaltime"].split(' ')[1]} -- to: ${d["tostationname"]}</p>`
-          }
-        }));
-        document.getElementById("stop").innerHTML = buses;
-      }
 
       data = getStopData(st).then((y) => {
         if (Object.keys(y).length === 0) {
