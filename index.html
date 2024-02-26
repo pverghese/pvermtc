@@ -232,6 +232,11 @@
         }));
         document.getElementById("stop").innerHTML = buses;
       }
+      //loading livebus from local storage
+      localStorageLiveBus = localStorage.getItem("liveBus");
+      if(localStorageLiveBus) {
+        getBusData(JSON.parse(localStorageLiveBus)["liveBus"]); 
+      }
 
     });
 
@@ -360,10 +365,13 @@
       map.on('locationfound', onLocationFound);
 
       data = getVehicleTripDetails(vehicleid).then((y) => {
+        console.log("Live bus data:", y);
         if (Object.keys(y).length === 0) {
           document.getElementById("bus").innerHTML = "Server not respoding with bus data";
           return
         }
+        localStorage.setItem("liveBus", JSON.stringify({"liveBus": vehicleid}));
+
         //Current Location of bus
         let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
         let long = parseFloat(y["LiveLocation"][0]["longitude"]);
@@ -437,6 +445,7 @@
         clearInterval(updatingHandle);
         map.stopLocate();
         userMarker = undefined;
+        localStorage.removeItem("liveBus")
       }
       document.getElementById("mapPanel").style.transform = "scaleX(0)";
       document.getElementById("mapPanel").style.opacity = "0.0";
