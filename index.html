@@ -65,6 +65,7 @@
   #stops {
     padding-top: 10px;
   }
+
   .pstops {
     filter: drop-shadow(2px 2px 2px black);
     background: linear-gradient(to right, rgb(37, 51, 84), rgb(3, 37, 80));
@@ -76,9 +77,10 @@
     padding: 5px;
     user-select: none;
     display: flow;
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin: 10px 0px;
   }
+
   .pstops:active {
     transform: translateY(2px);
     background: linear-gradient(to right, rgb(20, 30, 48), rgb(79, 21, 109));
@@ -98,7 +100,7 @@
   .buses:active {
     transform: translateY(4px);
     background-color: rgb(180, 188, 209);
-    
+
   }
 
   #map {
@@ -202,7 +204,7 @@
       //get location
       loc = localStorage.getItem("loc");
       if (location) {
-        document.getElementById("location").innerHTML =loc;
+        document.getElementById("location").innerHTML = loc;
 
       }
 
@@ -250,8 +252,6 @@
         document.getElementById("fname").value = ''
         data = search(val).then((y) => {
           if (y.length > 0) {
-            console.log("Got results: " + y.length)
-            console.log(y[0])
             getBusStops({ coords: { latitude: parseFloat(y[0]["lat"]), longitude: parseFloat(y[0]["lon"]) } })
           }
         })
@@ -271,13 +271,8 @@
       var x = "Current location is (" + "Lat: " + position.coords.latitude + ", " + "Long: " + position.coords.longitude + ")";
       localStorage.setItem("loc", x)
       document.getElementById("location").innerHTML = x;
-      console.log(x)
-      //console.log(data);
       const timestamp = new Date(Date.now())
-      //console.log(`Getting bus stations nearby at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
 
-
-      //document.getElementById("stops").innerHTML = "Loading...";
       data = getData(position).then((y) => {
 
         if (Object.keys(y).length === 0) {
@@ -287,11 +282,9 @@
         //Store in local storage
         localStorage.setItem("stops", JSON.stringify(y));
         var stops = '';
-        //console.log(y);
         y["data"].map(((d) => {
           stops += `<p class="pstops" onclick='getBusAtStation(${d["geofenceid"]})'>${d["geofencename"]} -> ${d["towards"]} ---- distance:${d["distance"]} ---${d["geofenceid"]}</p>`
         }));
-        //console.log(stops)
         document.getElementById("stops").innerHTML = stops;
       }
       )
@@ -313,7 +306,6 @@
         localStorage.setItem("station", JSON.stringify(y));
 
         d = y["data"]
-        console.log(d)
         buses = `Live Buses at station: ${st}`
         if (d.length == 0) {
           document.getElementById("stop").innerHTML = buses + `<p>No buses found</p>`
@@ -349,6 +341,7 @@
       }
       //Bus current location
       var marker = undefined;
+      var stopMarkers = [];
       map = L.map('map').setView([parseFloat(lat), parseFloat(long)], 13);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -371,14 +364,11 @@
           document.getElementById("bus").innerHTML = "Server not respoding with bus data";
           return
         }
-        console.log(y)
         //Current Location of bus
         let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
         let long = parseFloat(y["LiveLocation"][0]["longitude"]);
         marker = L.marker([lat, long]).addTo(map).bindPopup("Bus Location");
         d = y["RouteDetails"]
-        //bus = `<p><span class="bolded">Live Bus route for busno: ${y["RouteDetails"][0]["busno"]}</span></p>`
-        //bus += `<p>Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}</p>`
         bus = `Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}`
         document.getElementById("mapHeaderBarLabel").innerText = bus;
         if (d.length == 0) {
@@ -391,7 +381,9 @@
               fillColor: '#f03',
               fillOpacity: 0.75,
               radius: 100
-            }).addTo(map).bindPopup(`${j["stationname"]} - ${j['etastatus']}`);
+            });
+            circle.addTo(map).bindPopup(`${j["stationname"]} - ${j['etastatus']}`);
+            stopMarkers.push(circle);
           })
         }
       })
@@ -405,10 +397,18 @@
           let long = parseFloat(y["LiveLocation"][0]["longitude"]);
           //marker = L.marker([lat, long]).addTo(map);
           marker.setLatLng([lat, long])
+
           bus = `Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}`
           document.getElementById("mapHeaderBarLabel").innerText = bus;
 
           console.log(lat, long);
+          updatedTimeData = y["RouteDetails"];
+          console.log(updatedTimeData)
+          for (let i = 0; i < stopMarkers.length; i++) {
+            stopMarkers[i].setPopupContent(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`);
+            //console.log(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`)
+            //console.log(stopMarkers[i].getPopup())
+          }
         })
       }, 30000);
 
