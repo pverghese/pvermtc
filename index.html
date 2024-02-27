@@ -245,7 +245,7 @@
       console.log("Cleared all notifications");
       keys = Object.keys(timers);
       keys.map((k) => {
-        clearInterval(timers[k]);
+        clearInterval(timers[k].handle);
       })
       timers = {};
       localStorage.setItem("timers", JSON.stringify(timers));
