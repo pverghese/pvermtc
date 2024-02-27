@@ -163,6 +163,7 @@
     font-size: 14px;
     padding-right: 5px;
   }
+
   .mapPanel .notificationButton {
     background-color: cornflowerblue;
     color: white;
@@ -171,7 +172,7 @@
     border-radius: 5px;
     padding: 5px;
     margin-left: 5px;
-  } 
+  }
 
   .olddata {
     color: red;
@@ -229,10 +230,6 @@
     }
 
 
-    //Request notification permission    //TODO 
-    Notification.requestPermission().then(function (permission) {
-      console.log(permission);
-    });
 
 
     //Global map handler
@@ -473,13 +470,27 @@
     }
 
     function showNotification(stationName) {
+      if (Notification.permission !== 'granted') {
+        //Request notification permission    //TODO 
+        Notification.requestPermission().then(function (permission) {
+          console.log(permission);
+          let title = 'Setting notification'
+          let body = `Setting notification for this stop${stationName}`
+          var notification = new Notification(title, { body: body });
+          console.log(notification)
+          notification.onclick = () => {
+            notification.close();
+          }
+        });
+      }
       let title = 'Setting notification'
       let body = `Setting notification for this stop${stationName}`
-      var notification = new Notification(title, {body: body});
+      var notification = new Notification(title, { body: body });
       console.log(notification)
       notification.onclick = () => {
         notification.close();
       }
+
     }
     function onLocationFound(e) {
       var radius = e.accuracy;
