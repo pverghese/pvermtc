@@ -210,10 +210,6 @@
     <div id="map"></div>
   </div>
   <script>
-    //Install service worker
-    window.addEventListener('load', () => {
-      registerSW();
-    });
 
     // Register the Service Worker
     async function registerSW() {
@@ -239,6 +235,8 @@
 
     //First load
     window.addEventListener('load', function (event) {
+      //RegisterSW
+      registerSW();
       //get location
       loc = localStorage.getItem("loc");
       if (location) {
