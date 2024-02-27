@@ -199,6 +199,7 @@
     </div>
   </div>
   <div id="location"></div>
+  <button onclick="cancelAllNotifications()">Cancel all notification timers</button>
   <div id="stops" class="stops"></div>
   <div id="stop" class="stop"></div>
   <div id="bus" class="bus"></div>
@@ -225,8 +226,17 @@
       }
     }
 
+    //Timer handlers array
+    var timers = {};
 
-
+    function cancelAllNotifications() {
+      console.log("Cleared all notifications");
+      keys = Object.keys(timers);
+      keys.map((k) => {
+        clearInterval(timers[k]);
+      })
+      timers = {};
+    }
 
     //Global map handler
     var map = undefined;
@@ -275,8 +285,11 @@
         }));
         document.getElementById("stop").innerHTML = buses;
       }
-
     });
+    localStorageBus = localStorage.getItem("vehicle");
+    if (localStorageBus) {
+      console.log("Notification bus: ", localStorageBus)
+    }
 
     //Adding state
     window.addEventListener('popstate', () => {
@@ -427,7 +440,6 @@
               radius: 100
             });
             let stopName = j["stationname"];
-            console.log(stopName);
             let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='showNotification("${stopName}|${vehicleid}")'>Add notification</button></div>`
             circle.addTo(map).bindPopup(popUpText)
             stopMarkers.push(circle);
@@ -440,7 +452,6 @@
           if (Object.keys(y).length === 0) {
             return;
           }
-          console.log(y)
           let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
           let long = parseFloat(y["LiveLocation"][0]["longitude"]);
           //marker = L.marker([lat, long]).addTo(map);
@@ -455,7 +466,7 @@
             bus = `Live: ${y["LiveLocation"][0]["lastrefreshon"]}`
             document.getElementById("mapHeaderBarLabel").classList.remove("olddata");
           }
-          console.log(Date.parse(Date([parts[1], parts[0], parts[2]].join('-'))));
+          //console.log(Date.parse(Date([parts[1], parts[0], parts[2]].join('-'))));
 
           document.getElementById("mapHeaderBarLabel").innerHTML = bus;
 
@@ -478,14 +489,48 @@
 
       let stationName = i.split('|')[0]
       let vehicleId = i.split('|')[1]
+      console.log("Notification creation: ", vehicleId, stationName)
+      localStorage.setItem("vehicle", JSON.stringify({ "vehicleId": parseInt(vehicleId), "station": stationName }))
 
       let title = 'Setting notification'
       let body = `Setting notification for this stop ${stationName} for this bus: ${vehicleId}`
       navigator.serviceWorker.ready.then((reg) => {
         reg.showNotification(title, { body: body })
       })
+      var timer = setInterval(() => {
+        checkIfBusHasPassed(parseInt(vehicleId), stationName)
+      }, 30000)
+      timers[`${vehicleId}|${stationName}`] = timer;
+    }
+
+    function checkIfBusHasPassed(id, name) {
+      data = getVehicleTripDetails(id).then((d) => {
+        stationList = [];
+        liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
+        vehicleNo = d['LiveLocation'][0]['vehiclenumber'];
+        routeNo = d['LiveLocation'][0]['routeno'];
+
+        console.log(`Live loc of ${id}: ${liveLoc}`)
+        d["RouteDetails"].map((j) => {
+          stationList.push(j['stationname']);
+        })
+        // console.log(stationList);
+        
+        console.log(id, name, stationList.indexOf(name), stationList.indexOf(liveLoc))
+        if (stationList.indexOf(liveLoc) >= stationList.indexOf(name)) {
+          clearInterval(timers[`${id}|${name}`]);
+          delete timers[`${id}|${name}`]
+
+          console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${name}`)
+          navigator.serviceWorker.ready.then((reg) => {
+            reg.showNotification("Bus alert", {body: `Bus: ${routeNo} ${vehicleNo} has passed station ${name}`})
+          })
+
+        }
+      })
 
     }
+
     function onLocationFound(e) {
       var radius = e.accuracy;
       if (userMarker) {
