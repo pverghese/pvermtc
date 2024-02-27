@@ -209,8 +209,8 @@
     </div>
   </div>
   <div id="location"></div>
-  <button id="cancelButton" onclick="cancelAllNotifications()">Cancel all notification timers</button>
   <div id="notifications"></div>
+  <button id="cancelButton" onclick="cancelAllNotifications()">Cancel all notification timers</button>
   <div id="stops" class="stops"></div>
   <div id="stop" class="stop"></div>
   <div id="bus" class="bus"></div>
@@ -536,14 +536,13 @@
         timers[`${id}|${name}`].vehicleno=vehicleNo;
 
         if (stationList.indexOf(liveLoc) >= stationList.indexOf(name)) {
+          navigator.serviceWorker.ready.then((reg) => {
+            reg.showNotification("Bus alert", { body: `Bus: ${routeNo} ${vehicleNo} has passed station ${name}` })
+          })
           clearInterval(timers[`${id}|${name}`]);
           delete timers[`${id}|${name}`]
 
           console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${name}`)
-          navigator.serviceWorker.ready.then((reg) => {
-            reg.showNotification("Bus alert", { body: `Bus: ${routNo} ${vehicleNo} has passed station ${name}` })
-          })
-
         }
         updateNotificationDiv();
       })
