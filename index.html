@@ -248,6 +248,7 @@
         clearInterval(timers[k]);
       })
       timers = {};
+      localStorage.setItem("timers", JSON.stringify(timers));
       updateNotificationDiv();
     }
 
