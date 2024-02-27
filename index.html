@@ -436,6 +436,8 @@
         //Current Location of bus
         let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
         let long = parseFloat(y["LiveLocation"][0]["longitude"]);
+        let routeNo = y["LiveLocation"][0]["routeno"];
+        let vehicleNo = y["LiveLocation"][0]["vehiclenumber"];
         marker = L.marker([lat, long]).addTo(map).bindPopup("Bus Location");
         d = y["RouteDetails"]
         bus = `Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}`
@@ -452,7 +454,7 @@
               radius: 100
             });
             let stopName = j["stationname"];
-            let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='showNotification("${stopName}|${vehicleid}")'>Add notification</button></div>`
+            let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='showNotification("${stopName}|${vehicleid}|${routeNo}|${vehicleNo}")'>Add notification</button></div>`
             circle.addTo(map).bindPopup(popUpText)
             stopMarkers.push(circle);
           })
@@ -486,7 +488,7 @@
           //console.log(lat, long);
           updatedTimeData = y["RouteDetails"];
           for (let i = 0; i < stopMarkers.length; i++) {
-            let popUpText = `<div><div>${updatedTimeData[i]['stationname']} - ${updatedTimeData[i]['etastatus']}</div><button class='notificationButton' onclick='showNotification("${updatedTimeData[i]['stationname']}|${vehicleid}")'>Add notification</button></div>`
+            let popUpText = `<div><div>${updatedTimeData[i]['stationname']} - ${updatedTimeData[i]['etastatus']}</div><button class='notificationButton' onclick='showNotification("${updatedTimeData[i]['stationname']}|${vehicleid}|${routeNo}|${vehicleNo}")'>Add notification</button></div>`
             stopMarkers[i].setPopupContent(popUpText);
             //console.log(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`)
             //console.log(stopMarkers[i].getPopup())
@@ -501,27 +503,29 @@
 
       let stationName = i.split('|')[0]
       let vehicleId = i.split('|')[1]
+      let routeNo = i.split('|')[2]
+      let vehicleNo = i.split('|')[3]
       console.log("Notification creation: ", vehicleId, stationName)
       localStorage.setItem("vehicle", JSON.stringify({ "vehicleId": parseInt(vehicleId), "station": stationName }))
 
       let title = 'Setting notification'
-      let body = `Setting notification for this stop ${stationName} for this bus: ${vehicleId}`
+      let body = `Setting notification for this stop ${stationName} for this bus: ${routeNo} with plate: ${vehicleNo}`
       navigator.serviceWorker.ready.then((reg) => {
         reg.showNotification(title, { body: body })
       })
       var timer = setInterval(() => {
-        checkIfBusHasPassed(parseInt(vehicleId), stationName)
+        checkIfBusHasPassed(parseInt(vehicleId), stationName, routeNo, vehicleNo)
       }, 30000)
-      timers[`${vehicleId}|${stationName}`] = {"handle":timer, "currIndex":0, "stationIndex": 0, "routeno": '', "vehicleno": ''};
+      timers[`${vehicleId}|${stationName}`] = {"handle":timer, "currIndex":0, "stationIndex": 0, "routeno": routeNo, "vehicleno": vehicleNo};
       updateNotificationDiv();
     }
 
-    function checkIfBusHasPassed(id, name) {
+    function checkIfBusHasPassed(id, name, routeNo, vehicleNo) {
       data = getVehicleTripDetails(id).then((d) => {
         stationList = [];
         liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
-        vehicleNo = d['LiveLocation'][0]['vehiclenumber'];
-        routeNo = d['LiveLocation'][0]['routeno'];
+        // vehicleNo = d['LiveLocation'][0]['vehiclenumber'];
+        // routeNo = d['LiveLocation'][0]['routeno'];
 
         console.log(`Live loc of ${id}: ${liveLoc}`)
         d["RouteDetails"].map((j) => {
