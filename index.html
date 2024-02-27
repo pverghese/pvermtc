@@ -163,8 +163,9 @@
     font-size: 14px;
     padding-right: 5px;
   }
+
   .olddata {
-    color:red;
+    color: red;
   }
 
   .bolded {
@@ -220,6 +221,10 @@
 
 
     //Request notification permission    //TODO 
+    Notification.requestPermission().then(function (permission) {
+      console.log(permission);
+    });
+    new Notification("Test notification")
 
 
     //Global map handler
@@ -430,7 +435,7 @@
 
           parts = y["LiveLocation"][0]["lastrefreshon"].split('-')
           lastRefresh = Date.parse([parts[1], parts[0], parts[2]].join('-'));
-          if((Date.now() - lastRefresh)/60000 > 5) {
+          if ((Date.now() - lastRefresh) / 60000 > 5) {
             bus = `<span class="olddata"> GPS lost. Bus data not recent: ${y["LiveLocation"][0]["lastrefreshon"]}</span>`
             document.getElementById("mapHeaderBarLabel").classList.add("olddata");
           } else {
