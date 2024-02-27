@@ -9,8 +9,8 @@
     "description": "BMTC Live Maps",
     "icons": [
         {
-            "src": "/images/front-bus.png",
-            "sizes": "512x512",
+            "src": "images/front-bus.png",
+            "sizes": "256x256",
             "type": "image/png"
         }
     ]
