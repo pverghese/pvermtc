@@ -431,7 +431,7 @@
           parts = y["LiveLocation"][0]["lastrefreshon"].split('-')
           lastRefresh = Date.parse([parts[1], parts[0], parts[2]].join('-'));
           if((Date.now() - lastRefresh)/60000 > 5) {
-            bus = `<span class="olddata"> Old data: ${y["LiveLocation"][0]["lastrefreshon"]}</span>`
+            bus = `<span class="olddata"> GPS lost. Bus data not recent: ${y["LiveLocation"][0]["lastrefreshon"]}</span>`
             document.getElementById("mapHeaderBarLabel").classList.add("olddata");
           } else {
             bus = `Live: ${y["LiveLocation"][0]["lastrefreshon"]}`
