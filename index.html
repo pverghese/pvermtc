@@ -470,26 +470,14 @@
     }
 
     function showNotification(stationName) {
-      if (Notification.permission !== 'granted') {
-        //Request notification permission    //TODO 
-        Notification.requestPermission().then(function (permission) {
-          console.log(permission);
-          let title = 'Setting notification'
-          let body = `Setting notification for this stop${stationName}`
-          var notification = new Notification(title, { body: body });
-          console.log(notification)
-          notification.onclick = () => {
-            notification.close();
-          }
-        });
-      }
       let title = 'Setting notification'
-      let body = `Setting notification for this stop${stationName}`
+      let body = `Setting notification for this stop ${stationName}`
       var notification = new Notification(title, { body: body });
       console.log(notification)
       notification.onclick = () => {
         notification.close();
       }
+      
 
     }
     function onLocationFound(e) {
