@@ -298,11 +298,22 @@
         }));
         document.getElementById("stop").innerHTML = buses;
       }
+      localStorageTimers = localStorage.getItem("timers");
+      if(localStorageTimers) {
+        console.log("Timers found in local cache");
+        let temp = JSON.parse(localStorageTimers);
+        Object.keys(temp).map((d)=> {
+          let station = d.split('|')[1];
+          let id = d.split('|')[0];
+          let routeno = temp[d].routeno;
+          let vehicleno = temp[d].vehicleno;
+          //Adding notification alert
+          addNotification(`${station}|${id}|${routeno}|${vehicleno}`)
+
+        })
+      }
     });
-    localStorageBus = localStorage.getItem("vehicle");
-    if (localStorageBus) {
-      console.log("Notification bus: ", localStorageBus)
-    }
+
 
     //Adding state
     window.addEventListener('popstate', () => {
@@ -455,7 +466,7 @@
               radius: 100
             });
             let stopName = j["stationname"];
-            let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='showNotification("${stopName}|${vehicleid}|${routeNo}|${vehicleNo}")'>Add notification</button></div>`
+            let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='addNotification("${stopName}|${vehicleid}|${routeNo}|${vehicleNo}")'>Add notification</button></div>`
             circle.addTo(map).bindPopup(popUpText)
             stopMarkers.push(circle);
           })
@@ -491,7 +502,7 @@
           //console.log(lat, long);
           updatedTimeData = y["RouteDetails"];
           for (let i = 0; i < stopMarkers.length; i++) {
-            let popUpText = `<div><div>${updatedTimeData[i]['stationname']} - ${updatedTimeData[i]['etastatus']}</div><button class='notificationButton' onclick='showNotification("${updatedTimeData[i]['stationname']}|${vehicleid}|${routeNo}|${vehicleNo}")'>Add notification</button></div>`
+            let popUpText = `<div><div>${updatedTimeData[i]['stationname']} - ${updatedTimeData[i]['etastatus']}</div><button class='notificationButton' onclick='addNotification("${updatedTimeData[i]['stationname']}|${vehicleid}|${routeNo}|${vehicleNo}")'>Add notification</button></div>`
             stopMarkers[i].setPopupContent(popUpText);
             //console.log(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`)
             //console.log(stopMarkers[i].getPopup())
@@ -502,14 +513,13 @@
 
     }
 
-    function showNotification(i) {
+    function addNotification(i) {
 
       let stationName = i.split('|')[0]
       let vehicleId = i.split('|')[1]
       let routeNo = i.split('|')[2]
       let vehicleNo = i.split('|')[3]
       console.log("Notification creation: ", vehicleId, stationName)
-      localStorage.setItem("vehicle", JSON.stringify({ "vehicleId": parseInt(vehicleId), "station": stationName }))
 
       let title = 'Setting notification'
       let body = `Setting notification for this stop ${stationName} for this bus: ${routeNo} with plate: ${vehicleNo}`
@@ -520,6 +530,7 @@
         checkIfBusHasPassed(parseInt(vehicleId), stationName, routeNo, vehicleNo)
       }, 30000)
       timers[`${vehicleId}|${stationName}`] = { "handle": timer, "currIndex": 0, "stationIndex": 0, "routeno": routeNo, "vehicleno": vehicleNo };
+      localStorage.setItem("timers",JSON.stringify(timers));
       updateNotificationDiv();
     }
 
@@ -544,13 +555,15 @@
 
         if (stationList.indexOf(liveLoc) >= stationList.indexOf(name)) {
           navigator.serviceWorker.ready.then((reg) => {
-            reg.showNotification("Bus alert", { body: `Bus: ${routeNo} ${vehicleNo} has passed station ${name}` })
+            reg.showNotification("Bus alert", { body: `Bus: ${routeNo} ${vehicleNo} will pass ${name} next` })
           })
-          clearInterval(timers[`${id}|${name}`]);
+          clearInterval(timers[`${id}|${name}`].handle);
           delete timers[`${id}|${name}`]
+          localStorage.setItem("timers",JSON.stringify(timers));
 
           console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${name}`)
         }
+
         updateNotificationDiv();
       })
     }
