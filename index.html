@@ -104,10 +104,15 @@
     background-color: rgb(180, 188, 209);
 
   }
+
   #cancelButton {
-    width:100%;
+    width: 100%;
     margin: 0px;
-    margin-top:5px;
+    margin-top: 5px;
+  }
+  #notifications {
+    display: grid;
+    font-size: 0.6em;
   }
 
   #map {
@@ -205,10 +210,10 @@
   </div>
   <div id="location"></div>
   <button id="cancelButton" onclick="cancelAllNotifications()">Cancel all notification timers</button>
+  <div id="notifications"></div>
   <div id="stops" class="stops"></div>
   <div id="stop" class="stop"></div>
   <div id="bus" class="bus"></div>
-  <div id="notifications"></div>
   <div id="mapPanel" class="mapPanel">
     <div id="mapHeaderBar">
       <a href="javascript:void(0)" class="closebtn" onclick="history.back()">&times;</a>
@@ -242,6 +247,7 @@
         clearInterval(timers[k]);
       })
       timers = {};
+      updateNotificationDiv();
     }
 
     //Global map handler
@@ -506,7 +512,8 @@
       var timer = setInterval(() => {
         checkIfBusHasPassed(parseInt(vehicleId), stationName)
       }, 30000)
-      timers[`${vehicleId}|${stationName}`] = timer;
+      timers[`${vehicleId}|${stationName}`] = {"handle":timer, "currIndex":0, "stationIndex": 0, "routeno": '', "vehicleno": ''};
+      updateNotificationDiv();
     }
 
     function checkIfBusHasPassed(id, name) {
@@ -521,20 +528,36 @@
           stationList.push(j['stationname']);
         })
         // console.log(stationList);
-        
+
         console.log(id, name, stationList.indexOf(name), stationList.indexOf(liveLoc))
+        timers[`${id}|${name}`].stationIndex=stationList.indexOf(name);
+        timers[`${id}|${name}`].currIndex=stationList.indexOf(liveLoc);
+        timers[`${id}|${name}`].routeno=routeNo;
+        timers[`${id}|${name}`].vehicleno=vehicleNo;
+
         if (stationList.indexOf(liveLoc) >= stationList.indexOf(name)) {
           clearInterval(timers[`${id}|${name}`]);
           delete timers[`${id}|${name}`]
 
           console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${name}`)
           navigator.serviceWorker.ready.then((reg) => {
-            reg.showNotification("Bus alert", {body: `Bus: ${routNo} ${vehicleNo} has passed station ${name}`})
+            reg.showNotification("Bus alert", { body: `Bus: ${routNo} ${vehicleNo} has passed station ${name}` })
           })
 
         }
+        updateNotificationDiv();
       })
+    }
 
+    function updateNotificationDiv() {
+      notifs='';
+      k = Object.keys(timers);
+      k.map((d)=> {
+        let val = timers[d];
+        notifs+=`<p>${d.split('|')[0]} ${val.routeno} - ${val.vehicleno} for station: ${d.split('|')[1]} currLoc: ${val.currIndex} stationLoc: ${val.stationIndex}</p>`
+      })
+      document.getElementById("notifications").innerHTML=notifs;
+      
     }
 
     function onLocationFound(e) {
@@ -570,6 +593,7 @@
       //console.log(body)
       return body
     }
+ 
     async function getData(position) {
 
       //testData = '{"data":[{"rowno":1,"geofenceid":22937,"geofencename":"80ft Road MS Ramaiah College","center_lat":13.02752,"center_lon":77.57571,"towards":"MS Ramaiah Hospital","distance":0.28,"totalminute":3,"responsecode":200,"radiuskm":1},{"rowno":2,"geofenceid":20610,"geofencename":"Ashwathnagara","center_lat":13.02679,"center_lon":77.57984,"towards":"Gangenahalli","distance":0.32,"totalminute":4,"responsecode":200,"radiuskm":1},{"rowno":3,"geofenceid":23198,"geofencename":"Ashwathnagara","center_lat":13.02691,"center_lon":77.57973,"towards":"Ramaiah Hospital","distance":0.32,"totalminute":4,"responsecode":200,"radiuskm":1},{"rowno":4,"geofenceid":20786,"geofencename":"Geddalahalli","center_lat":13.03077,"center_lon":77.57751,"towards":"Nagashettyhalli","distance":0.59,"totalminute":7,"responsecode":200,"radiuskm":1},{"rowno":5,"geofenceid":25367,"geofencename":"Geddalahalli","center_lat":13.03082,"center_lon":77.57751,"towards":"Hebbala","distance":0.6,"totalminute":7,"responsecode":200,"radiuskm":1},{"rowno":6,"geofenceid":20731,"geofencename":"CPRI Quarters","center_lat":13.02241,"center_lon":77.5722,"towards":"Ramaiah Hospital","distance":0.64,"totalminute":8,"responsecode":200,"radiuskm":1},{"rowno":7,"geofenceid":20730,"geofencename":"CPRI Quarters","center_lat":13.02217,"center_lon":77.57224,"towards":"Sadashiva Nagara Police Station","distance":0.65,"totalminute":8,"responsecode":200,"radiuskm":1},{"rowno":8,"geofenceid":21029,"geofencename":"MS Ramaiah Hospital","center_lat":13.02771,"center_lon":77.57162,"towards":"Sadashiva Nagara Police Station","distance":0.66,"totalminute":8,"responsecode":200,"radiuskm":1},{"rowno":9,"geofenceid":29054,"geofencename":"MS Ramayya Hospital","center_lat":13.02835,"center_lon":77.57158,"towards":"C P R I","distance":0.69,"totalminute":8,"responsecode":200,"radiuskm":1},{"rowno":10,"geofenceid":33958,"geofencename":"MS Ramayya Hospital","center_lat":13.02847,"center_lon":77.57141,"towards":"Ashwath Nagara","distance":0.71,"totalminute":9,"responsecode":200,"radiuskm":1}],"Message":"Success","Issuccess":true,"exception":null,"RowCount":10,"responsecode":200}'
