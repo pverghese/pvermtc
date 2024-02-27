@@ -163,6 +163,9 @@
     font-size: 14px;
     padding-right: 5px;
   }
+  .olddata {
+    color:red;
+  }
 
   .bolded {
     color: #121a6f;
@@ -215,6 +218,8 @@
       }
     }
 
+
+    //Request notification permission    //TODO 
 
 
     //Global map handler
@@ -354,6 +359,7 @@
       const timestamp = new Date(Date.now())
       console.log(`Getting live bus data for ${vehicleid} at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
       //document.getElementById("stop").innerHTML = "getting data..."
+
       //GetLocation from id=location
       let a = document.getElementById("location")
       let lat = a.innerText.split(' ')[4]
@@ -416,17 +422,28 @@
           if (Object.keys(y).length === 0) {
             return;
           }
+          console.log(y)
           let lat = parseFloat(y["LiveLocation"][0]["latitude"]);
           let long = parseFloat(y["LiveLocation"][0]["longitude"]);
           //marker = L.marker([lat, long]).addTo(map);
           marker.setLatLng([lat, long])
 
-          bus = `Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}`
-          document.getElementById("mapHeaderBarLabel").innerText = bus;
+          parts = y["LiveLocation"][0]["lastrefreshon"].split('-')
+          lastRefresh = Date.parse([parts[1], parts[0], parts[2]].join('-'));
+          if((Date.now() - lastRefresh)/60000 > 5) {
+            bus = `<span class="olddata"> Old data: ${y["LiveLocation"][0]["lastrefreshon"]}</span>`
+            document.getElementById("mapHeaderBarLabel").classList.add("olddata");
+          } else {
+            bus = `Live: ${y["LiveLocation"][0]["lastrefreshon"]}`
+            document.getElementById("mapHeaderBarLabel").classList.remove("olddata");
+          }
+          console.log(Date.parse(Date([parts[1], parts[0], parts[2]].join('-'))));
+
+          document.getElementById("mapHeaderBarLabel").innerHTML = bus;
+
 
           //console.log(lat, long);
           updatedTimeData = y["RouteDetails"];
-          //console.log(updatedTimeData)
           for (let i = 0; i < stopMarkers.length; i++) {
             stopMarkers[i].setPopupContent(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`);
             //console.log(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`)
