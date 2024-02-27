@@ -104,6 +104,11 @@
     background-color: rgb(180, 188, 209);
 
   }
+  #cancelButton {
+    width:100%;
+    margin: 0px;
+    margin-top:5px;
+  }
 
   #map {
     height: 90%;
@@ -199,10 +204,11 @@
     </div>
   </div>
   <div id="location"></div>
-  <button onclick="cancelAllNotifications()">Cancel all notification timers</button>
+  <button id="cancelButton" onclick="cancelAllNotifications()">Cancel all notification timers</button>
   <div id="stops" class="stops"></div>
   <div id="stop" class="stop"></div>
   <div id="bus" class="bus"></div>
+  <div id="notifications"></div>
   <div id="mapPanel" class="mapPanel">
     <div id="mapHeaderBar">
       <a href="javascript:void(0)" class="closebtn" onclick="history.back()">&times;</a>
@@ -523,7 +529,7 @@
 
           console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${name}`)
           navigator.serviceWorker.ready.then((reg) => {
-            reg.showNotification("Bus alert", {body: `Bus: ${routeNo} ${vehicleNo} has passed station ${name}`})
+            reg.showNotification("Bus alert", {body: `Bus: ${routNo} ${vehicleNo} has passed station ${name}`})
           })
 
         }

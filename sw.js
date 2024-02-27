@@ -1,3 +1,4 @@
+const versionNo="1.0.1";
 var staticCacheName = "pwa";
  
 self.addEventListener("install", function (e) {
