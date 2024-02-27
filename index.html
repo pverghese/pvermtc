@@ -428,7 +428,7 @@
             });
             let stopName = j["stationname"];
             console.log(stopName);
-            let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='showNotification("${stopName}")'>Add notification</button></div>`
+            let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='showNotification("${stopName}|${vehicleid}")'>Add notification</button></div>`
             circle.addTo(map).bindPopup(popUpText)
             stopMarkers.push(circle);
           })
@@ -463,7 +463,7 @@
           //console.log(lat, long);
           updatedTimeData = y["RouteDetails"];
           for (let i = 0; i < stopMarkers.length; i++) {
-            let popUpText = `<div><div>${updatedTimeData[i]['stationname']} - ${updatedTimeData[i]['etastatus']}</div><button class='notificationButton' onclick='showNotification("${updatedTimeData[i]['stationname']}")'>Add notification</button></div>`
+            let popUpText = `<div><div>${updatedTimeData[i]['stationname']} - ${updatedTimeData[i]['etastatus']}</div><button class='notificationButton' onclick='showNotification("${updatedTimeData[i]['stationname']}|${vehicleid}")'>Add notification</button></div>`
             stopMarkers[i].setPopupContent(popUpText);
             //console.log(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`)
             //console.log(stopMarkers[i].getPopup())
@@ -474,9 +474,13 @@
 
     }
 
-    function showNotification(stationName) {
+    function showNotification(i) {
+
+      let stationName = i.split('|')[0]
+      let vehicleId = i.split('|')[1]
+
       let title = 'Setting notification'
-      let body = `Setting notification for this stop ${stationName}`
+      let body = `Setting notification for this stop ${stationName} for this bus: ${vehicleId}`
       navigator.serviceWorker.ready.then((reg) => {
         reg.showNotification(title, { body: body })
       })
