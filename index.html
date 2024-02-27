@@ -163,6 +163,15 @@
     font-size: 14px;
     padding-right: 5px;
   }
+  .mapPanel .notificationButton {
+    background-color: cornflowerblue;
+    color: white;
+    font-weight: bold;
+    width: 80%;
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 5px;
+  } 
 
   .olddata {
     color: red;
@@ -224,7 +233,6 @@
     Notification.requestPermission().then(function (permission) {
       console.log(permission);
     });
-    new Notification("Test notification")
 
 
     //Global map handler
@@ -416,7 +424,10 @@
               fillOpacity: 0.75,
               radius: 100
             });
-            circle.addTo(map).bindPopup(`${j["stationname"]} - ${j['etastatus']}`);
+            let stopName = j["stationname"];
+            console.log(stopName);
+            let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='showNotification("${stopName}")'>Add notification</button></div>`
+            circle.addTo(map).bindPopup(popUpText)
             stopMarkers.push(circle);
           })
         }
@@ -450,7 +461,8 @@
           //console.log(lat, long);
           updatedTimeData = y["RouteDetails"];
           for (let i = 0; i < stopMarkers.length; i++) {
-            stopMarkers[i].setPopupContent(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`);
+            let popUpText = `<div><div>${updatedTimeData[i]['stationname']} - ${updatedTimeData[i]['etastatus']}</div><button class='notificationButton' onclick='showNotification("${updatedTimeData[i]['stationname']}")'>Add notification</button></div>`
+            stopMarkers[i].setPopupContent(popUpText);
             //console.log(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`)
             //console.log(stopMarkers[i].getPopup())
           }
@@ -460,6 +472,15 @@
 
     }
 
+    function showNotification(stationName) {
+      let title = 'Setting notification'
+      let body = `Setting notification for this stop${stationName}`
+      var notification = new Notification(title, {body: body, vibrate:true});
+      console.log(notification)
+      notification.onclick = () => {
+        notification.close();
+      }
+    }
     function onLocationFound(e) {
       var radius = e.accuracy;
       if (userMarker) {
