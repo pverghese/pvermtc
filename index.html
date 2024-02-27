@@ -2,10 +2,12 @@
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+
 <head>
   <title>Geolocation API</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="manifest" href="manifest.json">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
@@ -194,6 +196,27 @@
     <div id="map"></div>
   </div>
   <script>
+    //Install service worker
+    window.addEventListener('load', () => {
+      registerSW();
+    });
+
+    // Register the Service Worker
+    async function registerSW() {
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator
+            .serviceWorker
+            .register('sw.js');
+        }
+        catch (e) {
+          console.log('SW registration failed');
+        }
+      }
+    }
+
+
+
     //Global map handler
     var map = undefined;
     //Global intervalUpdaterHandle
@@ -237,7 +260,7 @@
 
     //Adding state
     window.addEventListener('popstate', () => {
-      console.log("back button pressed", history.state);
+      //console.log("back button pressed", history.state);
       console.log("Back button pressed on map view. Going back to main screen")
       closeNav();
     });
@@ -294,7 +317,7 @@
       const timestamp = new Date(Date.now())
       console.log(`Getting live buses at station at: ${timestamp.toLocaleDateString()} ||| ${timestamp.toTimeString()}`)
       //document.getElementById("stop").innerHTML = "getting data..."
-      console.log(st)
+      //console.log(st)
 
 
       data = getStopData(st).then((y) => {
@@ -401,9 +424,9 @@
           bus = `Last refreshed: ${y["LiveLocation"][0]["lastrefreshon"]}`
           document.getElementById("mapHeaderBarLabel").innerText = bus;
 
-          console.log(lat, long);
+          //console.log(lat, long);
           updatedTimeData = y["RouteDetails"];
-          console.log(updatedTimeData)
+          //console.log(updatedTimeData)
           for (let i = 0; i < stopMarkers.length; i++) {
             stopMarkers[i].setPopupContent(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`);
             //console.log(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`)
@@ -418,7 +441,7 @@
     function onLocationFound(e) {
       var radius = e.accuracy;
       if (userMarker) {
-        console.log("User location update: ", e.latlng)
+        //console.log("User location update: ", e.latlng)
         userMarker.setLatLng(e.latlng);
 
 
@@ -445,7 +468,7 @@
     async function search(searchStr) {
       const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchStr + " bangalore")}&format=json&limit=5`)
       let body = await res.json()
-      console.log(body)
+      //console.log(body)
       return body
     }
     async function getData(position) {

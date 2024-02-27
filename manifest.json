@@ -1,0 +1,17 @@
+{
+    "name": "BMTC Maps",
+    "short_name": "BMTC",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#d0def5",
+    "theme_color": "white",
+    "scope": ".",
+    "description": "BMTC Live Maps",
+    "icons": [
+        {
+            "src": "/images/front-bus.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
