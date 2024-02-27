@@ -472,12 +472,10 @@
     function showNotification(stationName) {
       let title = 'Setting notification'
       let body = `Setting notification for this stop ${stationName}`
-      var notification = new Notification(title, { body: body });
       console.log(notification)
-      notification.onclick = () => {
-        notification.close();
-      }
-      
+      navigator.serviceWorker.ready.then((reg)=> {
+        reg.showNotification(title,{body: body})
+      }) 
 
     }
     function onLocationFound(e) {
