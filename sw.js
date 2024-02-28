@@ -1,4 +1,4 @@
-const versionNo = "1.0.22";
+const versionNo = "1.0.23";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -81,8 +81,8 @@ function updateNotificationDiv() {
     let vehicleId = k.split('|')[0];
     let routeNo = timerHandles[k].routeNo;
     let vehicleNo = timerHandles[k].vehicleNo;
-    let curr = timerHandles[k].currIndex;
-    let stationIndex = timerHandles[k].stationIndex;
+    let curr = (timerHandles[k].currIndex === undefined) ? 0 : timerHandles[k].currIndex;
+    let stationIndex = (timerHandles[k].stationIndex === undefined) ? 0 : timerHandles[k].stationIndex;
 
     html += `<div>${routeNo} - ${vehicleNo}   Curr: ${curr} StationIndex: ${stationIndex}</div>`
   })
