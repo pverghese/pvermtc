@@ -54,8 +54,11 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
       console.log(`${Date(Date.now())}  In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
       if (stationList.indexOf(liveLoc) >= stationList.indexOf(station)) {
         console.log(`Bus ${routeNo} - ${vehicleNo} will pass ${station} shortly`)
-        clearInterval(timerHandles[`${id}|${station}`].handle);
-        delete timerHandles[`${id}|${station}`]
+        const channel = new BroadcastChannel("sw-message");
+        channel.postMessage({title: "Notification"})
+
+        clearInterval(timerHandles[`${vehicleId}|${station}`].handle);
+        delete timerHandles[`${vehicleId}|${station}`]
         //localStorage.setItem("timers", JSON.stringify(timers));
 
         console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${station}`)

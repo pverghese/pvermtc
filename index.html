@@ -243,6 +243,12 @@
       }
     }
 
+    //Receieve messages from service worker
+    const channel  = new BroadcastChannel("sw-message");
+    channel.addEventListener('message', event => {
+      console.log('Received', event.data);
+    })
+
     //Timer handlers array
     var timers = {};
 
