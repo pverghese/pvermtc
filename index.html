@@ -200,7 +200,7 @@
   }
 
   #logs {
-    font-size:0.7em;
+    font-size: 0.7em;
   }
 </style>
 
@@ -306,10 +306,10 @@
         document.getElementById("stop").innerHTML = buses;
       }
       localStorageTimers = localStorage.getItem("timers");
-      if(localStorageTimers) {
+      if (localStorageTimers) {
         console.log("Timers found in local cache");
         let temp = JSON.parse(localStorageTimers);
-        Object.keys(temp).map((d)=> {
+        Object.keys(temp).map((d) => {
           let station = d.split('|')[1];
           let id = d.split('|')[0];
           let routeno = temp[d].routeno;
@@ -533,12 +533,20 @@
       navigator.serviceWorker.ready.then((reg) => {
         reg.showNotification(title, { body: body })
       })
-      var timer = setInterval(() => {
-        checkIfBusHasPassed(parseInt(vehicleId), stationName, routeNo, vehicleNo)
-      }, 30000)
-      timers[`${vehicleId}|${stationName}`] = { "handle": timer, "currIndex": 0, "stationIndex": 0, "routeno": routeNo, "vehicleno": vehicleNo };
-      localStorage.setItem("timers",JSON.stringify(timers));
-      updateNotificationDiv();
+
+      //Service worker update
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.active.postMessage(
+          `${vehicleid}`,
+        );
+      });
+
+      // var timer = setInterval(() => {
+      //   checkIfBusHasPassed(parseInt(vehicleId), stationName, routeNo, vehicleNo)
+      // }, 30000)
+      // timers[`${vehicleId}|${stationName}`] = { "handle": timer, "currIndex": 0, "stationIndex": 0, "routeno": routeNo, "vehicleno": vehicleNo };
+      // localStorage.setItem("timers", JSON.stringify(timers));
+      // updateNotificationDiv();
     }
 
     function checkIfBusHasPassed(id, name, routeNo, vehicleNo) {
@@ -555,7 +563,7 @@
         // console.log(stationList);
 
         console.log(id, name, stationList.indexOf(name), stationList.indexOf(liveLoc))
-        document.getElementById("logs").innerHTML+=`<div>${Date(Date.now())} : ${id} ${name} ${stationList.indexOf(name)} ${stationList.indexOf(liveLoc)}</div>`
+        document.getElementById("logs").innerHTML += `<div>${Date(Date.now())} : ${id} ${name} ${stationList.indexOf(name)} ${stationList.indexOf(liveLoc)}</div>`
         timers[`${id}|${name}`].stationIndex = stationList.indexOf(name);
         timers[`${id}|${name}`].currIndex = stationList.indexOf(liveLoc);
         timers[`${id}|${name}`].routeno = routeNo;
@@ -567,7 +575,7 @@
           })
           clearInterval(timers[`${id}|${name}`].handle);
           delete timers[`${id}|${name}`]
-          localStorage.setItem("timers",JSON.stringify(timers));
+          localStorage.setItem("timers", JSON.stringify(timers));
 
           console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${name}`)
         }
