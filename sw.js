@@ -1,4 +1,4 @@
-const versionNo = "1.0.14";
+const versionNo = "1.0.15";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -45,7 +45,7 @@ function getData(e) {
       routeNo = d['LiveLocation'][0]['routeno'];
 
       console.log(`${Date(Date.now())}  In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
-      document.getElementById("logs").innerHTML += `<div>${Date(Date.now())} In SW: Live loc of ${routeNo}-${vehicleNo}: ${liveLoc}</div>`
+      //document.getElementById("logs").innerHTML += `<div>${Date(Date.now())} In SW: Live loc of ${routeNo}-${vehicleNo}: ${liveLoc}</div>`
     })
   }, 30000)
   timerHandles[`${vehicleId}|${station}`] = { "handle": handle };
