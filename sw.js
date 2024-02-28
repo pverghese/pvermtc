@@ -29,7 +29,7 @@ self.addEventListener("message", (event) => {
   } else if (event.data.msg === "cancel") {
     console.log(`Message cancel: ${JSON.stringify(event.data)}`);
     Object.keys(timerHandles).map((k) => {
-      console.log(`In SW: Cancelling timer for ${k}`)
+      console.log(`In SW: Cancelling timer for ${k} in ${JSON.stringify(timerHandles)}`)
       clearInterval(timerHandles[k].handle);
     })
     timerHandles = {}
