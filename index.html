@@ -253,6 +253,8 @@
         })
       }else if(event.data.type==="update") {
         document.getElementById("notifications").innerHTML = event.data.message;
+      }else if(event.data.type==="updateLogs") {
+        document.getElementById("logs").innerHTML += event.data.message;
       }
     })
 
@@ -327,20 +329,20 @@
         }));
         document.getElementById("stop").innerHTML = buses;
       }
-      localStorageTimers = localStorage.getItem("timers");
-      if (localStorageTimers) {
-        console.log("Timers found in local cache");
-        let temp = JSON.parse(localStorageTimers);
-        Object.keys(temp).map((d) => {
-          let station = d.split('|')[1];
-          let id = d.split('|')[0];
-          let routeno = temp[d].routeno;
-          let vehicleno = temp[d].vehicleno;
-          //Adding notification alert
-          addNotification(`${station}|${id}|${routeno}|${vehicleno}`)
+      // localStorageTimers = localStorage.getItem("timers");
+      // if (localStorageTimers) {
+      //   console.log("Timers found in local cache");
+      //   let temp = JSON.parse(localStorageTimers);
+      //   Object.keys(temp).map((d) => {
+      //     let station = d.split('|')[1];
+      //     let id = d.split('|')[0];
+      //     let routeno = temp[d].routeno;
+      //     let vehicleno = temp[d].vehicleno;
+      //     //Adding notification alert
+      //     addNotification(`${station}|${id}|${routeno}|${vehicleno}`)
 
-        })
-      }
+      //   })
+      // }
     });
 
 

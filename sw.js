@@ -1,4 +1,4 @@
-const versionNo = "1.0.25";
+const versionNo = "1.0.26";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -56,6 +56,7 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
       timerHandles[`${vehicleId}|${station}`].vehicleNo = vehicleNo;
 
       console.log(`${Date(Date.now())}  In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
+      updateLogs(`${Date(Date.now())}  In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
       if (stationList.indexOf(liveLoc) >= stationList.indexOf(station)) {
         console.log(`Bus ${routeNo} - ${vehicleNo} will pass ${station} shortly`)
         channel.postMessage({ type: "alert", "title": "Bus Alert", "message": `Bus ${routeNo} - ${vehicleId} will pass ${station} station shortly.` })
@@ -66,6 +67,7 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
         //localStorage.setItem("timers", JSON.stringify(timers));
 
         console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${station}`)
+
       }
 
       //document.getElementById("logs").innerHTML += `<div>${Date(Date.now())} In SW: Live loc of ${routeNo}-${vehicleNo}: ${liveLoc}</div>`
@@ -89,6 +91,15 @@ function updateNotificationDiv() {
     html += `<div>${routeNo} - ${vehicleNo}   Curr: ${curr} StationIndex: ${stationIndex}</div>`
   })
   channel.postMessage({ type: "update", "title": "Update", "message": html })
+}
+
+function updateLogs(s) {
+  const channel = new BroadcastChannel("sw-message");
+  html = '';
+  html+=`<div>${s}</div>`
+  channel.postMessage({ type: "updateLogs", "title": "Update", "message": html })
+
+  return html
 }
 
 async function getVehicleTripDetails(vehicleid) {
