@@ -22,10 +22,10 @@ self.addEventListener("fetch", function (event) {
 
 self.addEventListener("message", (event) => {
   if (event.data.msg === "init") {
-    console.log(`Message init: ${event.data}`);
+    console.log(`Message init: ${JSON.stringify(event.data)}`);
     getData(event.data)
   } else if (event.data.msg === "cancel") {
-    console.log(`Message cancel: ${event.data}`);
+    console.log(`Message cancel: ${JSON.stringify(event.data)}`);
     Object.keys(timerHandles).map((k) => {
       console.log(`In SW: Cancelling timer for ${k}`)
       clearInterval(timerHandles[k].handle);
