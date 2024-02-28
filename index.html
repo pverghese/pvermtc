@@ -260,7 +260,7 @@
       //Using service worker
       navigator.serviceWorker.ready.then((registration) => {
         registration.active.postMessage(
-          {"msg":"cancel"},
+          { "msg": "cancel" },
         );
       });
 
@@ -546,9 +546,13 @@
       //Service worker update
       navigator.serviceWorker.ready.then((registration) => {
         registration.active.postMessage(
-          {"msg":"init", 
-          "vehicleId": vehicleId, 
-          "station": stationName},
+          {
+            "msg": "init",
+            "vehicleId": vehicleId,
+            "station": stationName,
+            "routeNo": routeNo,
+            "vehicleNo": vehicleNo
+          },
         );
       });
 

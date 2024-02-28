@@ -1,4 +1,4 @@
-const versionNo = "1.0.16";
+const versionNo = "1.0.17";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -25,7 +25,9 @@ self.addEventListener("message", (event) => {
     console.log(`Message init: ${JSON.stringify(event.data)}`);
     let station = event.data.station;
     let vehicleId = parseInt(event.data.vehicleId);
-    getData(vehicleId,station)
+    let routeNo = event.data.routeNo;
+    let vehicleNo = event.data.vehicleNo;
+    getData(vehicleId, station, routeNo, vehicleNo);
   } else if (event.data.msg === "cancel") {
     console.log(`Message cancel: ${JSON.stringify(event.data)}`);
     Object.keys(timerHandles).map((k) => {
@@ -36,19 +38,35 @@ self.addEventListener("message", (event) => {
   }
 });
 
-function getData(vehicleId, station) {
+function getData(vehicleId, station, routeNo, vehicleNo) {
   handle = setInterval(() => {
     getVehicleTripDetails(vehicleId).then((d) => {
       stationList = [];
       liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
-      vehicleNo = d['LiveLocation'][0]['vehiclenumber'];
-      routeNo = d['LiveLocation'][0]['routeno'];
+      d["RouteDetails"].map((j) => {
+        stationList.push(j['stationname']);
+      })
+      timerHandles[`${vehicleId}|${station}`].stationIndex = stationList.indexOf(station);
+      timerHandles[`${vehicleId}|${station}`].currIndex = stationList.indexOf(liveLoc);
+      timerHandles[`${vehicleId}|${station}`].routeNo = routeNo;
+      timerHandles[`${vehicleId}|${station}`].vehicleNo = vehicleNo;
 
       console.log(`${Date(Date.now())}  In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
+      if (stationList.indexOf(liveLoc) >= stationList.indexOf(station)) {
+        console.log(`Bus ${routeNo} - ${vehicleNo} will pass ${station} shortly`)
+        showNotification("Bus alert", { body: `Bus: ${routeNo} ${vehicleNo} will pass ${name} next` })
+        clearInterval(timerHandles[`${id}|${station}`].handle);
+        delete timerHandles[`${id}|${station}`]
+        //localStorage.setItem("timers", JSON.stringify(timers));
+
+        console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${station}`)
+      }
+
       //document.getElementById("logs").innerHTML += `<div>${Date(Date.now())} In SW: Live loc of ${routeNo}-${vehicleNo}: ${liveLoc}</div>`
     })
   }, 30000)
-  timerHandles[`${vehicleId}|${station}`] = { "handle": handle };
+  timerHandles[`${vehicleId}|${station}`] = { "handle": handle,
+};
   console.log(`SW: timer handles: ${JSON.stringify(timerHandles)}`)
 }
 
