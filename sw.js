@@ -1,4 +1,4 @@
-const versionNo = "1.0.23";
+const versionNo = "1.0.24";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -35,16 +35,16 @@ self.addEventListener("message", (event) => {
       clearInterval(timerHandles[k].handle);
     })
     timerHandles = {}
+    updateNotificationDiv();
   }
 });
 
 function getData(vehicleId, station, routeNo, vehicleNo) {
   handle = setInterval(() => {
-    const channel = new BroadcastChannel("sw-message");
-    html = updateNotificationDiv();
-    channel.postMessage({ type: "update", "title": "Update", "message": html })
+    updateNotificationDiv();
 
     getVehicleTripDetails(vehicleId).then((d) => {
+      const channel = new BroadcastChannel("sw-message");
       stationList = [];
       liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
       d["RouteDetails"].map((j) => {
@@ -75,6 +75,7 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
 }
 
 function updateNotificationDiv() {
+  const channel = new BroadcastChannel("sw-message");
   html = ``
   Object.keys(timerHandles).map((k) => {
     let station = k.split('|')[1];
@@ -86,7 +87,7 @@ function updateNotificationDiv() {
 
     html += `<div>${routeNo} - ${vehicleNo}   Curr: ${curr} StationIndex: ${stationIndex}</div>`
   })
-  return html;
+  channel.postMessage({ type: "update", "title": "Update", "message": html })
 }
 
 async function getVehicleTripDetails(vehicleid) {
