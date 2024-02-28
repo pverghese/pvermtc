@@ -1,5 +1,6 @@
-const versionNo = "1.0.28";
+const versionNo = "1.0.29";
 var staticCacheName = "pwa";
+const channel = new BroadcastChannel("sw-message");
 timerHandles = {};
 
 self.addEventListener("install", function (e) {
@@ -46,7 +47,6 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
     updateNotificationDiv();
 
     getVehicleTripDetails(vehicleId).then((d) => {
-      const channel = new BroadcastChannel("sw-message");
       stationList = [];
       liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
       d["RouteDetails"].map((j) => {
@@ -80,7 +80,6 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
 }
 
 function updateNotificationDiv() {
-  const channel = new BroadcastChannel("sw-message");
   html = ``
   Object.keys(timerHandles).map((k) => {
     let station = k.split('|')[1];
@@ -96,9 +95,8 @@ function updateNotificationDiv() {
 }
 
 function updateLogs(s) {
-  const channel = new BroadcastChannel("sw-message");
   html = '';
-  html+=`<div>${Date(Date.now())} - ${s}</div>`
+  html += `<div>${Date(Date.now())} - ${s}</div>`
   channel.postMessage({ type: "updateLogs", "title": "Update", "message": html })
 
 }
