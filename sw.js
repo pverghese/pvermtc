@@ -1,4 +1,4 @@
-const versionNo = "1.0.19";
+const versionNo = "1.0.20";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -54,7 +54,6 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
       console.log(`${Date(Date.now())}  In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
       if (stationList.indexOf(liveLoc) >= stationList.indexOf(station)) {
         console.log(`Bus ${routeNo} - ${vehicleNo} will pass ${station} shortly`)
-        const notif = new Notification("Bus alert", { body: `Bus: ${routeNo} ${vehicleNo} will pass ${station} soon.` })
         clearInterval(timerHandles[`${id}|${station}`].handle);
         delete timerHandles[`${id}|${station}`]
         //localStorage.setItem("timers", JSON.stringify(timers));
