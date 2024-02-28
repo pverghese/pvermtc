@@ -1,4 +1,4 @@
-const versionNo = "1.0.15";
+const versionNo = "1.0.16";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -23,7 +23,9 @@ self.addEventListener("fetch", function (event) {
 self.addEventListener("message", (event) => {
   if (event.data.msg === "init") {
     console.log(`Message init: ${JSON.stringify(event.data)}`);
-    getData(event.data)
+    let station = event.data.station;
+    let vehicleId = parseInt(event.data.vehicleId);
+    getData(vehicleId,station)
   } else if (event.data.msg === "cancel") {
     console.log(`Message cancel: ${JSON.stringify(event.data)}`);
     Object.keys(timerHandles).map((k) => {
@@ -34,9 +36,7 @@ self.addEventListener("message", (event) => {
   }
 });
 
-function getData(e) {
-  station = e.station;
-  vehicleId = parseInt(e.vehicleId);
+function getData(vehicleId, station) {
   handle = setInterval(() => {
     getVehicleTripDetails(vehicleId).then((d) => {
       stationList = [];
@@ -49,6 +49,7 @@ function getData(e) {
     })
   }, 30000)
   timerHandles[`${vehicleId}|${station}`] = { "handle": handle };
+  console.log(`SW: timer handles: ${JSON.stringify(timerHandles)}`)
 }
 
 async function getVehicleTripDetails(vehicleid) {
