@@ -248,14 +248,23 @@
 
     //Cancel all notifications
     function cancelAllNotifications() {
-      console.log("Cleared all notifications");
-      keys = Object.keys(timers);
-      keys.map((k) => {
-        clearInterval(timers[k].handle);
-      })
-      timers = {};
-      localStorage.setItem("timers", JSON.stringify(timers));
-      updateNotificationDiv();
+      // console.log("Cleared all notifications");
+      // keys = Object.keys(timers);
+      // keys.map((k) => {
+      //   clearInterval(timers[k].handle);
+      // })
+      // timers = {};
+      // localStorage.setItem("timers", JSON.stringify(timers));
+      // updateNotificationDiv();
+
+      //Using service worker
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.active.postMessage(
+          {"msg":"cancel"},
+        );
+      });
+
+
     }
 
     //Global map handler
@@ -537,7 +546,9 @@
       //Service worker update
       navigator.serviceWorker.ready.then((registration) => {
         registration.active.postMessage(
-          `${vehicleId}`,
+          {"msg":"init", 
+          "vehicleId": vehicleId, 
+          "station": stationName},
         );
       });
 

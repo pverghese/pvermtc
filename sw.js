@@ -1,5 +1,6 @@
 const versionNo = "1.0.13";
 var staticCacheName = "pwa";
+timerHandles = {};
 
 self.addEventListener("install", function (e) {
   e.waitUntil(
@@ -20,21 +21,34 @@ self.addEventListener("fetch", function (event) {
 });
 
 self.addEventListener("message", (event) => {
-  console.log(`Message received: ${event.data}`);
-  getData(event.data)
+  if (event.data.msg === "init") {
+    console.log(`Message init: ${event.data}`);
+    getData(event.data)
+  } else if (event.data.msg === "cancel") {
+    console.log(`Message cancel: ${event.data}`);
+    Object.keys(timerHandles).map((k) => {
+      console.log(`In SW: Cancelling timer for ${k}`)
+      clearInterval(timerHandles[k].handle);
+    })
+    timerHandles = {}
+  }
 });
 
-function getData(id) {
+function getData(e) {
+  station = e.station;
+  vehicleId = e.vehicleId;
   handle = setInterval(() => {
-    getVehicleTripDetails(parseInt(id)).then((d) => {
+    getVehicleTripDetails(vehicleId).then((d) => {
       stationList = [];
       liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
-      // vehicleNo = d['LiveLocation'][0]['vehiclenumber'];
-      // routeNo = d['LiveLocation'][0]['routeno'];
+      vehicleNo = d['LiveLocation'][0]['vehiclenumber'];
+      routeNo = d['LiveLocation'][0]['routeno'];
 
-      console.log(`${Date(Date.now())}  In SW: Live loc of ${id}: ${liveLoc}`)
+      console.log(`${Date(Date.now())}  In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
+      document.getElementById("logs").innerHTML += `<div>${Date(Date.now())} In SW: Live loc of ${routeNo}-${vehicleNo}: ${liveLoc}</div>`
     })
   }, 30000)
+  timerHandles[`${vehicleId}|${station}`] = { "handle": handle };
 }
 
 async function getVehicleTripDetails(vehicleid) {
