@@ -1,4 +1,4 @@
-const versionNo = "1.0.24";
+const versionNo = "1.0.25";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -62,6 +62,7 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
 
         clearInterval(timerHandles[`${vehicleId}|${station}`].handle);
         delete timerHandles[`${vehicleId}|${station}`]
+        updateNotificationDiv();
         //localStorage.setItem("timers", JSON.stringify(timers));
 
         console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${station}`)
@@ -116,5 +117,4 @@ async function getVehicleTripDetails(vehicleid) {
     console.log("There was an error", error)
     return {}
   }
-
 }
