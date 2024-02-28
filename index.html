@@ -244,9 +244,15 @@
     }
 
     //Receieve messages from service worker
-    const channel  = new BroadcastChannel("sw-message");
+    const channel = new BroadcastChannel("sw-message");
     channel.addEventListener('message', event => {
-      console.log('Received', event.data);
+      console.log('Received', event.data)
+      if (event.data.type === "alert") {
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.showNotification(event.data.title, { body: event.data.message })
+        })
+
+      }
     })
 
     //Timer handlers array

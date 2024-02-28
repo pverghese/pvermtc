@@ -1,4 +1,4 @@
-const versionNo = "1.0.20";
+const versionNo = "1.0.21";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -44,7 +44,7 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
       stationList = [];
       liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
       d["RouteDetails"].map((j) => {
-        stationList.push(j['stationname']);
+        stationList.push(j['stationname'].split('(')[0].trim());
       })
       timerHandles[`${vehicleId}|${station}`].stationIndex = stationList.indexOf(station);
       timerHandles[`${vehicleId}|${station}`].currIndex = stationList.indexOf(liveLoc);
@@ -55,7 +55,7 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
       if (stationList.indexOf(liveLoc) >= stationList.indexOf(station)) {
         console.log(`Bus ${routeNo} - ${vehicleNo} will pass ${station} shortly`)
         const channel = new BroadcastChannel("sw-message");
-        channel.postMessage({title: "Notification"})
+        channel.postMessage({type: "alert", "title": "Bus Alert", "message": `Bus ${routeNo} - ${vehicleId} will pass ${station} station shortly.`})
 
         clearInterval(timerHandles[`${vehicleId}|${station}`].handle);
         delete timerHandles[`${vehicleId}|${station}`]
