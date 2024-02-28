@@ -253,9 +253,10 @@
         })
       }else if(event.data.type==="update") {
         document.getElementById("notifications").innerHTML = event.data.message;
-      }else if(event.data.type==="updateLogs") {
-        document.getElementById("logs").innerHTML += event.data.message;
       }
+      // else if(event.data.type==="updateLogs") {
+      //   document.getElementById("logs").innerHTML += event.data.message;
+      // }
     })
 
     //Timer handlers array

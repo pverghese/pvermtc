@@ -1,4 +1,4 @@
-const versionNo = "1.0.29";
+const versionNo = "1.0.30";
 var staticCacheName = "pwa";
 const channel = new BroadcastChannel("sw-message");
 timerHandles = {};
@@ -34,7 +34,7 @@ self.addEventListener("message", (event) => {
     console.log(`Message cancel: ${JSON.stringify(event.data)}`);
     Object.keys(timerHandles).map((k) => {
       console.log(`In SW: Cancelling timer for ${k} in ${JSON.stringify(timerHandles)}`)
-      updateLogs(`In SW: Cancelling timer for ${k} in ${JSON.stringify(timerHandles)}`)
+      //updateLogs(`In SW: Cancelling timer for ${k} in ${JSON.stringify(timerHandles)}`)
       clearInterval(timerHandles[k].handle);
     })
     timerHandles = {}
@@ -47,6 +47,7 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
     updateNotificationDiv();
 
     getVehicleTripDetails(vehicleId).then((d) => {
+      console.log(self.clients)
       stationList = [];
       liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
       d["RouteDetails"].map((j) => {
@@ -58,7 +59,7 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
       timerHandles[`${vehicleId}|${station}`].vehicleNo = vehicleNo;
 
       console.log(`${Date(Date.now())}  In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
-      updateLogs(`In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
+      //updateLogs(`In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
       if (stationList.indexOf(liveLoc) >= stationList.indexOf(station)) {
         console.log(`Bus ${routeNo} - ${vehicleNo} will pass ${station} shortly`)
         channel.postMessage({ type: "alert", "title": "Bus Alert", "message": `Bus ${routeNo} - ${vehicleId} will pass ${station} station shortly.` })
@@ -96,8 +97,8 @@ function updateNotificationDiv() {
 
 function updateLogs(s) {
   html = '';
-  html += `<div>${Date(Date.now())} - ${s}</div>`
-  channel.postMessage({ type: "updateLogs", "title": "Update", "message": html })
+  html += `<div>${Date(Date.now())} - ${s}</div>`;
+  channel.postMessage({ type: "updateLogs", "title": "Update", "message": html });
 
 }
 
