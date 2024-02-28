@@ -1,4 +1,4 @@
-const versionNo = "1.0.13";
+const versionNo = "1.0.14";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -36,7 +36,7 @@ self.addEventListener("message", (event) => {
 
 function getData(e) {
   station = e.station;
-  vehicleId = e.vehicleId;
+  vehicleId = parseInt(e.vehicleId);
   handle = setInterval(() => {
     getVehicleTripDetails(vehicleId).then((d) => {
       stationList = [];
