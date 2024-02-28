@@ -1,4 +1,4 @@
-const versionNo = "1.0.30";
+const versionNo="1.0.8";
 var staticCacheName = "pwa";
 const channel = new BroadcastChannel("sw-message");
 timerHandles = {};

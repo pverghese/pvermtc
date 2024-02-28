@@ -219,7 +219,6 @@
   <div id="stops" class="stops"></div>
   <div id="stop" class="stop"></div>
   <div id="bus" class="bus"></div>
-  <div id="logs"></div>
   <div id="mapPanel" class="mapPanel">
     <div id="mapHeaderBar">
       <a href="javascript:void(0)" class="closebtn" onclick="history.back()">&times;</a>
@@ -262,7 +261,6 @@
     //Timer handlers array
     var timers = {};
 
-    //Cancel all notifications
     function cancelAllNotifications() {
       // console.log("Cleared all notifications");
       // keys = Object.keys(timers);
@@ -594,7 +592,6 @@
         // console.log(stationList);
 
         console.log(id, name, stationList.indexOf(name), stationList.indexOf(liveLoc))
-        document.getElementById("logs").innerHTML += `<div>${Date(Date.now())} : ${id} ${name} ${stationList.indexOf(name)} ${stationList.indexOf(liveLoc)}</div>`
         timers[`${id}|${name}`].stationIndex = stationList.indexOf(name);
         timers[`${id}|${name}`].currIndex = stationList.indexOf(liveLoc);
         timers[`${id}|${name}`].routeno = routeNo;
