@@ -251,7 +251,8 @@
         navigator.serviceWorker.ready.then((reg) => {
           reg.showNotification(event.data.title, { body: event.data.message })
         })
-
+      }else if(event.data.type==="update") {
+        document.getElementById("notifications").innerHTML = event.data.message;
       }
     })
 

@@ -1,4 +1,4 @@
-const versionNo = "1.0.21";
+const versionNo = "1.0.22";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -40,6 +40,10 @@ self.addEventListener("message", (event) => {
 
 function getData(vehicleId, station, routeNo, vehicleNo) {
   handle = setInterval(() => {
+    const channel = new BroadcastChannel("sw-message");
+    html = updateNotificationDiv();
+    channel.postMessage({ type: "update", "title": "Update", "message": html })
+
     getVehicleTripDetails(vehicleId).then((d) => {
       stationList = [];
       liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
@@ -54,8 +58,7 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
       console.log(`${Date(Date.now())}  In SW: Live loc of ${routeNo}-${vehicleNo} - ${vehicleId}}: ${liveLoc}`)
       if (stationList.indexOf(liveLoc) >= stationList.indexOf(station)) {
         console.log(`Bus ${routeNo} - ${vehicleNo} will pass ${station} shortly`)
-        const channel = new BroadcastChannel("sw-message");
-        channel.postMessage({type: "alert", "title": "Bus Alert", "message": `Bus ${routeNo} - ${vehicleId} will pass ${station} station shortly.`})
+        channel.postMessage({ type: "alert", "title": "Bus Alert", "message": `Bus ${routeNo} - ${vehicleId} will pass ${station} station shortly.` })
 
         clearInterval(timerHandles[`${vehicleId}|${station}`].handle);
         delete timerHandles[`${vehicleId}|${station}`]
@@ -67,9 +70,23 @@ function getData(vehicleId, station, routeNo, vehicleNo) {
       //document.getElementById("logs").innerHTML += `<div>${Date(Date.now())} In SW: Live loc of ${routeNo}-${vehicleNo}: ${liveLoc}</div>`
     })
   }, 30000)
-  timerHandles[`${vehicleId}|${station}`] = { "handle": handle,
-};
+  timerHandles[`${vehicleId}|${station}`] = { "handle": handle, "station": station, "vehicleId": vehicleId, "routeNo": routeNo, "vehicleNo": vehicleNo };
   console.log(`SW: timer handles: ${JSON.stringify(timerHandles)}`)
+}
+
+function updateNotificationDiv() {
+  html = ``
+  Object.keys(timerHandles).map((k) => {
+    let station = k.split('|')[1];
+    let vehicleId = k.split('|')[0];
+    let routeNo = timerHandles[k].routeNo;
+    let vehicleNo = timerHandles[k].vehicleNo;
+    let curr = timerHandles[k].currIndex;
+    let stationIndex = timerHandles[k].stationIndex;
+
+    html += `<div>${routeNo} - ${vehicleNo}   Curr: ${curr} StationIndex: ${stationIndex}</div>`
+  })
+  return html;
 }
 
 async function getVehicleTripDetails(vehicleid) {
