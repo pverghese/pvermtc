@@ -1,4 +1,4 @@
-const versionNo = "1.0.11";
+const versionNo = "1.0.12";
 var staticCacheName = "pwa";
 
 self.addEventListener("install", function (e) {
@@ -24,7 +24,7 @@ self.addEventListener("message", (event) => {
   getData(event.data)
 });
 
-function getData(sym) {
+function getData(id) {
   handle = setInterval(() => {
     getVehicleTripDetails(id).then((d) => {
       stationList = [];
