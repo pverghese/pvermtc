@@ -1,4 +1,4 @@
-const versionNo = "1.0.26";
+const versionNo = "1.0.27";
 var staticCacheName = "pwa";
 timerHandles = {};
 
@@ -96,10 +96,9 @@ function updateNotificationDiv() {
 function updateLogs(s) {
   const channel = new BroadcastChannel("sw-message");
   html = '';
-  html+=`<div>${s}</div>`
+  html+=`<div>${Date(Date.now())} - ${s}</div>`
   channel.postMessage({ type: "updateLogs", "title": "Update", "message": html })
 
-  return html
 }
 
 async function getVehicleTripDetails(vehicleid) {
