@@ -309,7 +309,7 @@
           let routeno = temp[d].routeno;
           let vehicleno = temp[d].vehicleno;
           //Adding notification alert
-          addNotification(`${station}|${id}|${routeno}|${vehicleno}`)
+          addNotification(`${station}|${id}|${routeno}|${vehicleno}`,false)
         })
       }
     });
@@ -466,7 +466,7 @@
               radius: 100
             });
             let stopName = j["stationname"];
-            let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='addNotification("${stopName}|${vehicleid}|${routeNo}|${vehicleNo}")'>Add notification</button></div>`
+            let popUpText = `<div><div>${j['stationname']} - ${j['etastatus']}</div><button class='notificationButton' onclick='addNotification("${stopName}|${vehicleid}|${routeNo}|${vehicleNo}",true)'>Add notification</button></div>`
             circle.addTo(map).bindPopup(popUpText)
             stopMarkers.push(circle);
           })
@@ -513,7 +513,7 @@
 
     }
 
-    function addNotification(i, show=false) {
+    function addNotification(i, show) {
       console.log("ShowNotification: ", show)
 
       let stationName = i.split('|')[0]
@@ -525,6 +525,7 @@
       let title = 'Setting notification'
       let body = `Setting notification for this stop ${stationName} for this bus: ${routeNo} with plate: ${vehicleNo}`
       if (show===true) {
+        console.log("showing notification")
         navigator.serviceWorker.ready.then((reg) => {
           reg.showNotification(title, { body: body })
         })
