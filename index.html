@@ -544,8 +544,10 @@
         // vehicleNo = d['LiveLocation'][0]['vehiclenumber'];
         // routeNo = d['LiveLocation'][0]['routeno'];
         d["RouteDetails"].map((j) => {
-          stationList.push(j['stationname'].split('|')[0].trim());
+          stationList.push(j['stationname'].split('(')[0].trim());
         })
+        console.log(stationList);
+        console.log(stationList.indexOf(liveLoc))
         let eta = d['RouteDetails'][stationList.indexOf(name)]["lastetaupdated"]
         let timeToNextAlarm = Date.parse(eta) - Date.now();
         console.log("Time to eta: ", timeToNextAlarm)
