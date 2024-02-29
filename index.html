@@ -524,7 +524,7 @@
 
       let title = 'Setting notification'
       let body = `Setting notification for this stop ${stationName} for this bus: ${routeNo} with plate: ${vehicleNo}`
-      if (show) {
+      if (show===true) {
         navigator.serviceWorker.ready.then((reg) => {
           reg.showNotification(title, { body: body })
         })
