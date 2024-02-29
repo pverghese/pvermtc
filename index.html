@@ -539,12 +539,13 @@
       data = getVehicleTripDetails(id).then((d) => {
         stationList = [];
         liveLoc = d['LiveLocation'][0]['nextstop'].split('(')[0].trim()
+        console.log(d);
         // vehicleNo = d['LiveLocation'][0]['vehiclenumber'];
         // routeNo = d['LiveLocation'][0]['routeno'];
 
         console.log(`Live loc of ${id}: ${liveLoc}`)
         d["RouteDetails"].map((j) => {
-          stationList.push(j['stationname']);
+          stationList.push(j['stationname'].split('|')[0].trim());
         })
         // console.log(stationList);
 

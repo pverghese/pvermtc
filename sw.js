@@ -1,7 +1,8 @@
-const versionNo="1.0.8";
+const versionNo="1.0.9";
 var staticCacheName = "pwa";
  
 self.addEventListener("install", function (e) {
+  e.skipWaiting();
   e.waitUntil(
     caches.open(staticCacheName).then(function (cache) {
       return cache.addAll(["index.html"]);
