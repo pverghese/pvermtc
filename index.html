@@ -502,7 +502,7 @@
           //console.log(lat, long);
           updatedTimeData = y["RouteDetails"];
           for (let i = 0; i < stopMarkers.length; i++) {
-            let popUpText = `<div><div>${updatedTimeData[i]['stationname']} - ${updatedTimeData[i]['etastatus']}</div><button class='notificationButton' onclick='addNotification("${updatedTimeData[i]['stationname']}|${vehicleid}|${routeNo}|${vehicleNo}")'>Add notification</button></div>`
+            let popUpText = `<div><div>${updatedTimeData[i]['stationname']} - ${updatedTimeData[i]['etastatus']}</div><button class='notificationButton' onclick='addNotification("${updatedTimeData[i]['stationname']}|${vehicleid}|${routeNo}|${vehicleNo},true")'>Add notification</button></div>`
             stopMarkers[i].setPopupContent(popUpText);
             //console.log(`${updatedTimeData[i]["stationname"]} - ${updatedTimeData[i]['etastatus']}`)
             //console.log(stopMarkers[i].getPopup())
