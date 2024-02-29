@@ -530,8 +530,8 @@
           reg.showNotification(title, { body: body })
         })
       }
+      timers[`${vehicleId}|${stationName}`] = { "handle": 0, "currIndex": 0, "stationIndex": 0, "routeno": routeNo, "vehicleno": vehicleNo, "eta": "" };
       checkIfBusHasPassed(parseInt(vehicleId), stationName, routeNo, vehicleNo)
-      timers[`${vehicleId}|${stationName}`] = { "handle": 0, "currIndex": 0, "stationIndex": 0, "routeno": routeNo, "vehicleno": vehicleNo };
       localStorage.setItem("timers", JSON.stringify(timers));
       updateNotificationDiv();
     }
@@ -546,8 +546,6 @@
         d["RouteDetails"].map((j) => {
           stationList.push(j['stationname'].split('(')[0].trim());
         })
-        console.log(stationList);
-        console.log(stationList.indexOf(liveLoc))
         let eta = d['RouteDetails'][stationList.indexOf(name)]["lastetaupdated"]
         let timeToNextAlarm = Date.parse(eta) - Date.now();
         console.log("Time to eta: ", timeToNextAlarm)
@@ -580,6 +578,7 @@
         timers[`${id}|${name}`].currIndex = stationList.indexOf(liveLoc);
         timers[`${id}|${name}`].routeno = routeNo;
         timers[`${id}|${name}`].vehicleno = vehicleNo;
+        timers[`${id}|${name}`].eta = eta.split('T')[1];
         updateNotificationDiv();
 
       })
@@ -590,7 +589,7 @@
       k = Object.keys(timers);
       k.map((d) => {
         let val = timers[d];
-        notifs += `<p>${d.split('|')[0]} ${val.routeno} - ${val.vehicleno} for station: ${d.split('|')[1]} currLoc: ${val.currIndex} stationLoc: ${val.stationIndex}</p>`
+        notifs += `<p>${d.split('|')[0]} ${val.routeno} - ${val.vehicleno} for station: ${d.split('|')[1]} currLoc: ${val.currIndex} eta: ${val.eta}</p>`
       })
       document.getElementById("notifications").innerHTML = notifs;
 
