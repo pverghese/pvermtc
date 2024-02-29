@@ -300,17 +300,16 @@
         document.getElementById("stop").innerHTML = buses;
       }
       localStorageTimers = localStorage.getItem("timers");
-      if(localStorageTimers) {
+      if (localStorageTimers) {
         console.log("Timers found in local cache");
         let temp = JSON.parse(localStorageTimers);
-        Object.keys(temp).map((d)=> {
+        Object.keys(temp).map((d) => {
           let station = d.split('|')[1];
           let id = d.split('|')[0];
           let routeno = temp[d].routeno;
           let vehicleno = temp[d].vehicleno;
           //Adding notification alert
           addNotification(`${station}|${id}|${routeno}|${vehicleno}`)
-
         })
       }
     });
@@ -514,7 +513,7 @@
 
     }
 
-    function addNotification(i) {
+    function addNotification(i, show=false) {
 
       let stationName = i.split('|')[0]
       let vehicleId = i.split('|')[1]
@@ -524,14 +523,16 @@
 
       let title = 'Setting notification'
       let body = `Setting notification for this stop ${stationName} for this bus: ${routeNo} with plate: ${vehicleNo}`
-      navigator.serviceWorker.ready.then((reg) => {
-        reg.showNotification(title, { body: body })
-      })
+      if (show) {
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.showNotification(title, { body: body })
+        })
+      }
       var timer = setInterval(() => {
         checkIfBusHasPassed(parseInt(vehicleId), stationName, routeNo, vehicleNo)
       }, 30000)
       timers[`${vehicleId}|${stationName}`] = { "handle": timer, "currIndex": 0, "stationIndex": 0, "routeno": routeNo, "vehicleno": vehicleNo };
-      localStorage.setItem("timers",JSON.stringify(timers));
+      localStorage.setItem("timers", JSON.stringify(timers));
       updateNotificationDiv();
     }
 
@@ -561,7 +562,7 @@
           })
           clearInterval(timers[`${id}|${name}`].handle);
           delete timers[`${id}|${name}`]
-          localStorage.setItem("timers",JSON.stringify(timers));
+          localStorage.setItem("timers", JSON.stringify(timers));
 
           console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${name}`)
         }
