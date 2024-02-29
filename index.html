@@ -562,14 +562,15 @@
           localStorage.setItem("timers", JSON.stringify(timers));
 
           console.log(`Bus ${routeNo}-${vehicleNo} has passed notification location ${name}`)
+          updateNotificationDiv();
           return
         }
 
 
-        console.log(`Next alarm for ${routeNo} - ${vehicleNo} in ${timeToNextAlarm * 0.80 / 60000} minutes`);
+        console.log(`Next alarm for ${routeNo} - ${vehicleNo} in ${timeToNextAlarm * 0.5 / 60000} minutes`);
         let handle = setTimeout(() => {
           checkIfBusHasPassed(id, name, routeNo, vehicleNo);
-        }, Math.round(timeToNextAlarm * 0.8))
+        }, Math.round(timeToNextAlarm * 0.5))
 
         console.log(id, name, stationList.indexOf(name), stationList.indexOf(liveLoc))
         timers[`${id}|${name}`].handle = handle;
